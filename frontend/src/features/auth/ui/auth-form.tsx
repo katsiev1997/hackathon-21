@@ -12,6 +12,7 @@ import { cn, formatFieldErrors } from "@/shared/lib/utils";
 import { useForm } from "@tanstack/react-form";
 import { Eye, EyeOff, Loader2Icon, Lock, Mail } from "lucide-react";
 import { useCallback, useState } from "preact/hooks";
+import { Link } from "wouter-preact";
 import { z } from "zod";
 
 type AuthTab = "login" | "signup";
@@ -159,13 +160,12 @@ export function AuthForm() {
                   <div className="flex items-center gap-2">
                     <Label htmlFor={field.name}>Пароль</Label>
                     {tab === "login" && (
-                      <a
-                        href="#"
+                      <Link
+                        href="/auth/forgot-password"
                         className="ml-auto text-xs font-medium text-primary hover:underline"
-                        onClick={(e) => e.preventDefault()}
                       >
                         Забыли пароль?
-                      </a>
+                      </Link>
                     )}
                   </div>
                   <div className="relative">
