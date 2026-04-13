@@ -1,20 +1,29 @@
-import { useState } from "preact/hooks";
-import { useForm } from "@tanstack/react-form";
-import { z } from "zod";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/shared/components/ui/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
-import { Lock, Mail, Eye, EyeOff } from "lucide-react";
-import { cn } from "@/lib/utils";
+} from "@/shared/components/ui/card";
+import { Input } from "@/shared/components/ui/input";
+import { Label } from "@/shared/components/ui/label";
+import { cn, formatFieldErrors } from "@/shared/lib/utils";
+import { useForm } from "@tanstack/react-form";
+import { Eye, EyeOff, Loader2Icon, Lock, Mail } from "lucide-react";
+import { useCallback, useState } from "preact/hooks";
+import { z } from "zod";
 
 type AuthTab = "login" | "signup";
+
+/** Показывать текст ошибки после blur/ввода или после неудачной отправки (иначе «Повторите пароль» без фокуса молчит). */
+function showFieldValidationMessage(meta: {
+  isTouched: boolean;
+  isValid: boolean;
+  errors: unknown[];
+}): boolean {
+  return !meta.isValid && (meta.isTouched || meta.errors.length > 0);
+}
 
 const authSchema = z.object({
   email: z.email("Введите корректный email адрес"),
@@ -48,6 +57,15 @@ export function AuthForm() {
     form.reset();
     setShowPassword(false);
   };
+
+  const confirmPassword = useCallback(
+    ({ value }: { value: string }) => {
+      return value !== form.getFieldValue("password")
+        ? "Пароли не совпадают"
+        : undefined;
+    },
+    [form],
+  );
 
   return (
     <Card className="w-full max-w-md border-0 bg-card py-6 shadow-xl ring-1 ring-black/5 dark:ring-white/10">
@@ -98,8 +116,7 @@ export function AuthForm() {
           <form.Field
             name="email"
             children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
+              const isInvalid = showFieldValidationMessage(field.state.meta);
               return (
                 <div className="grid gap-2">
                   <Label htmlFor={field.name}>Email</Label>
@@ -125,7 +142,7 @@ export function AuthForm() {
                   </div>
                   {isInvalid && (
                     <p className="text-xs text-destructive">
-                      {field.state.meta.errors.join(", ")}
+                      {formatFieldErrors(field.state.meta.errors)}
                     </p>
                   )}
                 </div>
@@ -136,8 +153,7 @@ export function AuthForm() {
           <form.Field
             name="password"
             children={(field) => {
-              const isInvalid =
-                field.state.meta.isTouched && !field.state.meta.isValid;
+              const isInvalid = showFieldValidationMessage(field.state.meta);
               return (
                 <div className="grid gap-2">
                   <div className="flex items-center gap-2">
@@ -190,7 +206,7 @@ export function AuthForm() {
                   </div>
                   {isInvalid && (
                     <p className="text-xs text-destructive">
-                      {field.state.meta.errors.join(", ")}
+                      {formatFieldErrors(field.state.meta.errors)}
                     </p>
                   )}
                 </div>
@@ -202,22 +218,11 @@ export function AuthForm() {
             <form.Field
               name="confirmPassword"
               validators={{
-                onBlur: ({ value }) => {
-                  if (value !== form.getFieldValue("password")) {
-                    return "Пароли не совпадают";
-                  }
-                  return undefined;
-                },
-                onSubmit: ({ value }) => {
-                  if (value !== form.getFieldValue("password")) {
-                    return "Пароли не совпадают";
-                  }
-                  return undefined;
-                },
+                onBlur: confirmPassword,
+                onSubmit: confirmPassword,
               }}
               children={(field) => {
-                const isInvalid =
-                  field.state.meta.isTouched && !field.state.meta.isValid;
+                const isInvalid = showFieldValidationMessage(field.state.meta);
                 return (
                   <div className="grid gap-2">
                     <Label htmlFor={field.name}>Повторите пароль</Label>
@@ -245,7 +250,7 @@ export function AuthForm() {
                     </div>
                     {isInvalid && (
                       <p className="text-xs text-destructive">
-                        {field.state.meta.errors.join(", ")}
+                        {formatFieldErrors(field.state.meta.errors)}
                       </p>
                     )}
                   </div>
@@ -278,11 +283,13 @@ export function AuthForm() {
             className="h-10 w-full font-medium"
             disabled={form.state.isSubmitting}
           >
-            {form.state.isSubmitting
-              ? "Загрузка..."
-              : tab === "login"
-                ? "Войти"
-                : "Создать аккаунт"}
+            {form.state.isSubmitting ? (
+              <Loader2Icon className="size-4 animate-spin" />
+            ) : tab === "login" ? (
+              "Войти"
+            ) : (
+              "Создать аккаунт"
+            )}
           </Button>
         </form>
 

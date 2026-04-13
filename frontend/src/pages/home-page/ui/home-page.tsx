@@ -1,8 +1,8 @@
 import { AuthForm } from "@/features/auth";
-import { cn } from "@/lib/utils";
+import { cn } from "@/shared/lib/utils";
 import { Code2, Lightbulb, Rocket, Users } from "lucide-react";
 
-export function App() {
+export const HomePage = () => {
   return (
     <div className="flex min-h-svh flex-col bg-background md:flex-row">
       <aside
@@ -101,4 +101,4 @@ export function App() {
       </main>
     </div>
   );
-}
+};
