@@ -38,26 +38,26 @@ export const HomePage = () => {
 
           <ul className="flex flex-col gap-4 text-sm">
             <li className="flex items-start gap-3">
-              <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/10 ring-1 ring-white/15">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/10 ring-1 ring-white/15">
                 <Users className="size-4" />
               </span>
-              <span className="pt-1 text-white/95">
+              <span className="pt-1.5 text-white/95">
                 Smart team formation &amp; matching
               </span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/10 ring-1 ring-white/15">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/10 ring-1 ring-white/15">
                 <Lightbulb className="size-4" />
               </span>
-              <span className="pt-1 text-white/95">
+              <span className="pt-1.5 text-white/95">
                 Idea pitching &amp; community voting
               </span>
             </li>
             <li className="flex items-start gap-3">
-              <span className="mt-0.5 flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/10 ring-1 ring-white/15">
+              <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-white/10 ring-1 ring-white/15">
                 <Rocket className="size-4" />
               </span>
-              <span className="pt-1 text-white/95">
+              <span className="pt-1.5 text-white/95">
                 Project tracking &amp; mentor access
               </span>
             </li>
