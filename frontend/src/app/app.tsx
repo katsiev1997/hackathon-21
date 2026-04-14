@@ -1,16 +1,13 @@
-import {
-  ForgotPasswordPage,
-  RecoveryPasswordPage,
-} from "@/pages/auth-page";
-import { HomePage } from "@/pages/home-page";
-import { Route, Router } from "wouter-preact";
+import { PreactQueryProvider } from "./providers/preact-query-provider";
+import { RouterProvider } from "./providers/router-provider";
+import { TooltipProvider } from "@/shared/components/ui/tooltip";
 
 export function App() {
   return (
-    <Router>
-      <Route path="/" component={HomePage} />
-      <Route path="/auth/forgot-password" component={ForgotPasswordPage} />
-      <Route path="/auth/recovery-password" component={RecoveryPasswordPage} />
-    </Router>
+    <TooltipProvider delayDuration={200}>
+      <PreactQueryProvider>
+        <RouterProvider />
+      </PreactQueryProvider>
+    </TooltipProvider>
   );
 }

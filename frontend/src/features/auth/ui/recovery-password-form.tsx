@@ -163,9 +163,7 @@ export function RecoveryPasswordForm() {
                       value={field.state.value}
                       onBlur={field.handleBlur}
                       onChange={(e) =>
-                        field.handleChange(
-                          (e.target as HTMLInputElement).value,
-                        )
+                        field.handleChange((e.target as HTMLInputElement).value)
                       }
                       aria-invalid={isInvalid}
                     />
@@ -195,10 +193,7 @@ export function RecoveryPasswordForm() {
         </form>
 
         <p className="text-center text-sm text-muted-foreground">
-          <Link
-            href="/"
-            className="font-medium text-primary hover:underline"
-          >
+          <Link href="/" className="font-medium text-primary hover:underline">
             ← Вернуться ко входу
           </Link>
         </p>
