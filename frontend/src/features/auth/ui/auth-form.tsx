@@ -14,6 +14,7 @@ import { Eye, EyeOff, Loader2Icon, Lock, Mail } from "lucide-react";
 import { useCallback, useState } from "preact/hooks";
 import { Link } from "wouter-preact";
 import { z } from "zod";
+import { useLocation } from "wouter-preact";
 
 type AuthTab = "login" | "signup";
 
@@ -36,6 +37,7 @@ export function AuthForm() {
   const [tab, setTab] = useState<AuthTab>("login");
   const [showPassword, setShowPassword] = useState(false);
   const [remember, setRemember] = useState(false);
+  const [, navigate] = useLocation();
 
   const form = useForm({
     defaultValues: {
@@ -50,6 +52,7 @@ export function AuthForm() {
     onSubmit: async ({ value }) => {
       const { confirmPassword: _, ...data } = value;
       console.log(tab === "login" ? "Login:" : "Signup:", data);
+      navigate("/dashboard");
     },
   });
 
