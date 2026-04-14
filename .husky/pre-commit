@@ -1,0 +1,5 @@
+if git diff --cached --name-only | grep -q '^frontend/'; then
+  echo "Проверяем сборку…"
+  (cd frontend && npm run build)
+  echo "Сборка прошла."
+fi
