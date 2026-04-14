@@ -1,54 +1,13 @@
-import { DashboardLayout } from "@/app/layouts/dashboard-layout";
-import { DashboardPlaceholderPage } from "@/shared/components/dashboard-placeholder-page";
-import { ForgotPasswordPage, RecoveryPasswordPage } from "@/pages/auth-page";
-import { TeamBoardPage } from "@/pages/team-board-page";
-import { HomePage } from "@/pages/home-page";
-import { Route, Router, Switch } from "wouter-preact";
+import { PreactQueryProvider } from "./providers/preact-query-provider";
+import { RouterProvider } from "./providers/router-provider";
+import { TooltipProvider } from "@/shared/components/ui/tooltip";
 
 export function App() {
   return (
-    <Router>
-      <Route path="/" component={HomePage} />
-      <Route path="/auth/forgot-password" component={ForgotPasswordPage} />
-      <Route path="/auth/recovery-password" component={RecoveryPasswordPage} />
-
-      <Route path="/dashboard" nest>
-        <DashboardLayout>
-          <Switch>
-            <Route path="/" component={TeamBoardPage} />
-            <Route path="/teams">
-              <DashboardPlaceholderPage
-                title="Teams Dashboard"
-                description="Manage your teams and invitations."
-              />
-            </Route>
-            <Route path="/ideas">
-              <DashboardPlaceholderPage
-                title="Ideas & Voting"
-                description="Publish ideas and vote on community submissions."
-              />
-            </Route>
-            <Route path="/kanban">
-              <DashboardPlaceholderPage
-                title="Kanban Board"
-                description="Track tasks across your team workflow."
-              />
-            </Route>
-            <Route path="/leaderboard">
-              <DashboardPlaceholderPage
-                title="Leaderboard"
-                description="See team scores and hackathon progress."
-              />
-            </Route>
-            <Route path="/profile">
-              <DashboardPlaceholderPage
-                title="User Profile"
-                description="Your profile, skills, and team preferences."
-              />
-            </Route>
-          </Switch>
-        </DashboardLayout>
-      </Route>
-    </Router>
+    <TooltipProvider delayDuration={200}>
+      <PreactQueryProvider>
+        <RouterProvider />
+      </PreactQueryProvider>
+    </TooltipProvider>
   );
 }
