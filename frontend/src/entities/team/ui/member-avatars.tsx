@@ -1,9 +1,4 @@
-import {
-  Avatar,
-  AvatarFallback,
-  AvatarGroup,
-  AvatarImage,
-} from "@/shared/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarGroup, AvatarImage } from "@/shared/components/ui/avatar";
 import type { TeamMember } from "@/entities/team/model/types";
 
 type MemberAvatarsProps = {
@@ -25,12 +20,8 @@ export function MemberAvatars({ members }: MemberAvatarsProps) {
     <AvatarGroup className="flex items-center">
       {shown.map((m) => (
         <Avatar key={m.id} size="sm" className="ring-2 ring-background">
-          {m.avatarUrl ? (
-            <AvatarImage src={m.avatarUrl} alt="" />
-          ) : null}
-          <AvatarFallback className="text-[10px]">
-            {memberInitials(m.name)}
-          </AvatarFallback>
+          {m.avatarUrl ? <AvatarImage src={m.avatarUrl} alt="" /> : null}
+          <AvatarFallback className="text-[10px]">{memberInitials(m.name)}</AvatarFallback>
         </Avatar>
       ))}
     </AvatarGroup>

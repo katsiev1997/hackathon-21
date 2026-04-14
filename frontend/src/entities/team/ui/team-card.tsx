@@ -30,25 +30,17 @@ export function TeamCard({ team, actions, onBookmarkToggle }: TeamCardProps) {
         <TeamAvatar name={team.name} className="shrink-0" />
         <div className="flex min-w-0 flex-1 flex-col gap-1">
           <div className="flex items-start justify-between gap-2">
-            <CardTitle className="truncate text-base leading-tight">
-              {team.name}
-            </CardTitle>
+            <CardTitle className="truncate text-base leading-tight">{team.name}</CardTitle>
             <Button
               type="button"
               variant="ghost"
               size="icon-xs"
               className="shrink-0 text-muted-foreground"
               aria-pressed={team.isBookmarked}
-              aria-label={
-                team.isBookmarked ? "Remove bookmark" : "Save team"
-              }
+              aria-label={team.isBookmarked ? "Remove bookmark" : "Save team"}
               onClick={() => onBookmarkToggle?.(team.id)}
             >
-              <Bookmark
-                className={
-                  team.isBookmarked ? "fill-primary text-primary" : undefined
-                }
-              />
+              <Bookmark className={team.isBookmarked ? "fill-primary text-primary" : undefined} />
             </Button>
           </div>
           <CardDescription className="text-xs font-medium text-primary/90">
@@ -57,9 +49,7 @@ export function TeamCard({ team, actions, onBookmarkToggle }: TeamCardProps) {
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-4 pt-4">
-        <p className="line-clamp-3 text-sm text-muted-foreground">
-          {team.description}
-        </p>
+        <p className="line-clamp-3 text-sm text-muted-foreground">{team.description}</p>
         <div className="flex flex-col gap-2">
           <p className="text-[10px] font-semibold tracking-wider text-muted-foreground uppercase">
             Open roles

@@ -9,10 +9,7 @@ type RoleBadgeProps = {
 export function RoleBadge({ role }: RoleBadgeProps) {
   return (
     <Badge variant="secondary" className="gap-1.5 font-normal">
-      <span
-        className="size-1.5 shrink-0 rounded-full bg-primary"
-        aria-hidden
-      />
+      <span className="size-1.5 shrink-0 rounded-full bg-primary" aria-hidden />
       {ROLE_LABELS[role]}
     </Badge>
   );

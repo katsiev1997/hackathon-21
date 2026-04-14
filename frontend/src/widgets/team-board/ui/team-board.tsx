@@ -18,16 +18,11 @@ export function TeamBoard() {
     setQuery(q);
   }, []);
 
-  const visible = useMemo(
-    () => filterTeams(teams, filters, query),
-    [teams, filters, query],
-  );
+  const visible = useMemo(() => filterTeams(teams, filters, query), [teams, filters, query]);
 
   const toggleBookmark = useCallback((teamId: string) => {
     setTeams((prev) =>
-      prev.map((t) =>
-        t.id === teamId ? { ...t, isBookmarked: !t.isBookmarked } : t,
-      ),
+      prev.map((t) => (t.id === teamId ? { ...t, isBookmarked: !t.isBookmarked } : t)),
     );
   }, []);
 
@@ -35,10 +30,7 @@ export function TeamBoard() {
     <div className="relative flex flex-1 flex-col gap-6 px-4 py-6 md:px-8">
       <TeamBoardHeader onSearchQueryChange={handleSearchQueryChange} />
       <TeamFilterBar filters={filters} onChange={setFilters} />
-      <TeamGrid
-        teams={visible}
-        onBookmarkToggle={toggleBookmark}
-      />
+      <TeamGrid teams={visible} onBookmarkToggle={toggleBookmark} />
       {visible.length === 0 && (
         <p className="text-center text-sm text-muted-foreground">
           No teams match your filters. Try clearing filters or search.

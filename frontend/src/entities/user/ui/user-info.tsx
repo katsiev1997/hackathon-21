@@ -17,16 +17,12 @@ export function UserInfo({ user }: UserInfoProps) {
   return (
     <div className="flex items-center gap-3 overflow-hidden px-2 py-1.5">
       <Avatar className="size-9 shrink-0">
-        {user.avatarUrl ? (
-          <AvatarImage src={user.avatarUrl} alt="" />
-        ) : null}
+        {user.avatarUrl ? <AvatarImage src={user.avatarUrl} alt="" /> : null}
         <AvatarFallback>{initials(user.name)}</AvatarFallback>
       </Avatar>
       <div className="flex min-w-0 flex-col gap-0.5">
         <span className="truncate text-sm font-medium">{user.name}</span>
-        <span className="truncate text-xs text-muted-foreground">
-          {user.roleLabel}
-        </span>
+        <span className="truncate text-xs text-muted-foreground">{user.roleLabel}</span>
       </div>
     </div>
   );

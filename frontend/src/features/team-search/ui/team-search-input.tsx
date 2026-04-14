@@ -27,12 +27,7 @@ export function TeamSearchInput({
   }, [value]);
 
   return (
-    <div
-      className={cn(
-        "relative min-w-[200px] max-w-md flex-1",
-        className,
-      )}
-    >
+    <div className={cn("relative min-w-[200px] max-w-md flex-1", className)}>
       <Search
         className="pointer-events-none absolute top-1/2 left-2.5 -translate-y-1/2 text-muted-foreground"
         aria-hidden
@@ -41,9 +36,7 @@ export function TeamSearchInput({
         type="search"
         placeholder={placeholder}
         value={value}
-        onChange={(e) =>
-          setValue((e.target as HTMLInputElement).value)
-        }
+        onChange={(e) => setValue((e.target as HTMLInputElement).value)}
         className="h-9 pl-9"
         aria-label="Search teams"
       />

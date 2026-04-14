@@ -2,11 +2,7 @@ import { ChevronDown } from "lucide-react";
 import type { ComponentChildren } from "preact";
 import { Button } from "@/shared/components/ui/button";
 import { Checkbox } from "@/shared/components/ui/checkbox";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/shared/components/ui/popover";
+import { Popover, PopoverContent, PopoverTrigger } from "@/shared/components/ui/popover";
 import { ROLE_LABELS } from "@/entities/team/lib/role-labels";
 import type { TeamRole } from "@/entities/team/model/types";
 import { FilterChip } from "@/features/team-filter/ui/filter-chip";
@@ -24,14 +20,7 @@ type TeamFilterBarProps = {
   onChange: (next: TeamBoardFilters) => void;
 };
 
-const ROLES: TeamRole[] = [
-  "frontend",
-  "backend",
-  "fullstack",
-  "designer",
-  "qa",
-  "pm",
-];
+const ROLES: TeamRole[] = ["frontend", "backend", "fullstack", "designer", "qa", "pm"];
 
 export function TeamFilterBar({ filters, onChange }: TeamFilterBarProps) {
   const hasActive =
@@ -165,16 +154,13 @@ export function TeamFilterBar({ filters, onChange }: TeamFilterBarProps) {
               <Button
                 key={opt}
                 type="button"
-                variant={
-                  filters.availability === opt ? "secondary" : "ghost"
-                }
+                variant={filters.availability === opt ? "secondary" : "ghost"}
                 size="sm"
                 className="justify-start font-normal"
                 onClick={() =>
                   onChange({
                     ...filters,
-                    availability:
-                      filters.availability === opt ? null : opt,
+                    availability: filters.availability === opt ? null : opt,
                   })
                 }
               >
@@ -209,11 +195,7 @@ export function TeamFilterBar({ filters, onChange }: TeamFilterBarProps) {
 
       <div className="flex min-w-0 flex-1 flex-wrap items-center gap-2">
         {chips.map((c) => (
-          <FilterChip
-            key={c.key}
-            label={c.label}
-            onRemove={c.clear}
-          />
+          <FilterChip key={c.key} label={c.label} onRemove={c.clear} />
         ))}
         {hasActive && (
           <Button
@@ -231,22 +213,11 @@ export function TeamFilterBar({ filters, onChange }: TeamFilterBarProps) {
   );
 }
 
-function FilterDropdown({
-  label,
-  children,
-}: {
-  label: string;
-  children: ComponentChildren;
-}) {
+function FilterDropdown({ label, children }: { label: string; children: ComponentChildren }) {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button
-          type="button"
-          variant="outline"
-          size="sm"
-          className="font-normal"
-        >
+        <Button type="button" variant="outline" size="sm" className="font-normal">
           {label}
           <ChevronDown data-icon="inline-end" />
         </Button>

@@ -19,33 +19,15 @@ import { Loader2Icon } from "lucide-react";
 import { useCallback } from "preact/hooks";
 import { z } from "zod";
 
-const ROLES: TeamRole[] = [
-  "frontend",
-  "backend",
-  "fullstack",
-  "designer",
-  "qa",
-  "pm",
-];
+const ROLES: TeamRole[] = ["frontend", "backend", "fullstack", "designer", "qa", "pm"];
 
-const roleEnum = z.enum([
-  "frontend",
-  "backend",
-  "fullstack",
-  "designer",
-  "qa",
-  "pm",
-]);
+const roleEnum = z.enum(["frontend", "backend", "fullstack", "designer", "qa", "pm"]);
 
 const createTeamSchema = z.object({
   name: z.string().min(2, "Name must be at least 2 characters"),
-  description: z
-    .string()
-    .min(10, "Description must be at least 10 characters"),
+  description: z.string().min(10, "Description must be at least 10 characters"),
   track: z.string().min(1, "Select a track"),
-  openRoles: z
-    .array(roleEnum)
-    .min(1, "Select at least one open role"),
+  openRoles: z.array(roleEnum).min(1, "Select at least one open role"),
 });
 
 function showFieldValidationMessage(meta: {
@@ -82,14 +64,9 @@ export function CreateTeamDialog({ open, onOpenChange }: CreateTeamDialogProps) 
     },
   });
 
-  const toggleRole = useCallback(
-    (role: TeamRole, current: TeamRole[]) => {
-      return current.includes(role)
-        ? current.filter((r) => r !== role)
-        : [...current, role];
-    },
-    [],
-  );
+  const toggleRole = useCallback((role: TeamRole, current: TeamRole[]) => {
+    return current.includes(role) ? current.filter((r) => r !== role) : [...current, role];
+  }, []);
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
@@ -97,8 +74,7 @@ export function CreateTeamDialog({ open, onOpenChange }: CreateTeamDialogProps) 
         <DialogHeader>
           <DialogTitle>Create team</DialogTitle>
           <DialogDescription>
-            Add a name, describe the idea, and pick open roles. You can edit
-            details later.
+            Add a name, describe the idea, and pick open roles. You can edit details later.
           </DialogDescription>
         </DialogHeader>
 
@@ -121,11 +97,7 @@ export function CreateTeamDialog({ open, onOpenChange }: CreateTeamDialogProps) 
                     id="create-team-name"
                     value={field.state.value}
                     onBlur={field.handleBlur}
-                    onChange={(e) =>
-                      field.handleChange(
-                        (e.target as HTMLInputElement).value,
-                      )
-                    }
+                    onChange={(e) => field.handleChange((e.target as HTMLInputElement).value)}
                     aria-invalid={invalid}
                   />
                   {invalid && (
@@ -154,11 +126,7 @@ export function CreateTeamDialog({ open, onOpenChange }: CreateTeamDialogProps) 
                     )}
                     value={field.state.value}
                     onBlur={field.handleBlur}
-                    onChange={(e) =>
-                      field.handleChange(
-                        (e.target as HTMLTextAreaElement).value,
-                      )
-                    }
+                    onChange={(e) => field.handleChange((e.target as HTMLTextAreaElement).value)}
                     aria-invalid={invalid}
                   />
                   {invalid && (
@@ -185,11 +153,7 @@ export function CreateTeamDialog({ open, onOpenChange }: CreateTeamDialogProps) 
                     )}
                     value={field.state.value}
                     onBlur={field.handleBlur}
-                    onChange={(e) =>
-                      field.handleChange(
-                        (e.target as HTMLSelectElement).value,
-                      )
-                    }
+                    onChange={(e) => field.handleChange((e.target as HTMLSelectElement).value)}
                     aria-invalid={invalid}
                   >
                     {TRACK_OPTIONS.map((t) => (
@@ -224,9 +188,7 @@ export function CreateTeamDialog({ open, onOpenChange }: CreateTeamDialogProps) 
                         <Checkbox
                           checked={field.state.value.includes(role)}
                           onCheckedChange={() => {
-                            field.handleChange(
-                              toggleRole(role, field.state.value),
-                            );
+                            field.handleChange(toggleRole(role, field.state.value));
                           }}
                         />
                         {ROLE_LABELS[role]}
@@ -244,11 +206,7 @@ export function CreateTeamDialog({ open, onOpenChange }: CreateTeamDialogProps) 
           />
 
           <DialogFooter className="gap-2 sm:gap-2">
-            <Button
-              type="button"
-              variant="outline"
-              onClick={() => onOpenChange(false)}
-            >
+            <Button type="button" variant="outline" onClick={() => onOpenChange(false)}>
               Cancel
             </Button>
             <Button type="submit" disabled={form.state.isSubmitting}>

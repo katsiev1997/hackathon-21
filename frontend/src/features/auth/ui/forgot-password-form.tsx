@@ -46,9 +46,7 @@ export function ForgotPasswordForm() {
         <CardTitle className="text-xl font-semibold tracking-tight">
           Восстановление пароля
         </CardTitle>
-        <CardDescription>
-          Укажите email — отправим ссылку для сброса пароля
-        </CardDescription>
+        <CardDescription>Укажите email — отправим ссылку для сброса пароля</CardDescription>
       </CardHeader>
 
       <CardContent className="flex flex-col gap-6 px-6">
@@ -81,9 +79,7 @@ export function ForgotPasswordForm() {
                       className="h-10 pl-9"
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) =>
-                        field.handleChange((e.target as HTMLInputElement).value)
-                      }
+                      onChange={(e) => field.handleChange((e.target as HTMLInputElement).value)}
                       aria-invalid={isInvalid}
                     />
                   </div>
@@ -112,10 +108,7 @@ export function ForgotPasswordForm() {
         </form>
 
         <p className="text-center text-sm text-muted-foreground">
-          <Link
-            href="/"
-            className="font-medium text-primary hover:underline"
-          >
+          <Link href="/" className="font-medium text-primary hover:underline">
             ← Вернуться ко входу
           </Link>
         </p>
