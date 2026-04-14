@@ -7,9 +7,11 @@ import { analyzer } from "vite-bundle-analyzer";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
+const analyze = process.env.ANALYZE === "true";
+
 // https://vite.dev/config/
 export default defineConfig({
-  plugins: [tailwindcss(), preact(), analyzer()],
+  plugins: [tailwindcss(), preact(), ...(analyze ? [analyzer({})] : [])], //TODO: remove analyzer
   resolve: {
     alias: {
       "@": path.resolve(__dirname, "./src"),
