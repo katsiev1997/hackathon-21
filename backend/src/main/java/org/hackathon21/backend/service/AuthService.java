@@ -1,6 +1,5 @@
 package org.hackathon21.backend.service;
 
-import org.hackathon21.backend.dto.*;
 import org.hackathon21.backend.dto.request.LoginRequest;
 import org.hackathon21.backend.dto.request.RegisterRequest;
 import org.hackathon21.backend.dto.response.AuthResponse;
