@@ -1,0 +1,8 @@
+if git diff --cached --name-only | grep -q '^frontend/'; then
+  echo "Запускаем lint-staged…"
+  (cd frontend && npx lint-staged)
+  echo "lint-staged завершён."
+  echo "Проверяем сборку…"
+  (cd frontend && npm run build)
+  echo "Сборка прошла."
+fi
