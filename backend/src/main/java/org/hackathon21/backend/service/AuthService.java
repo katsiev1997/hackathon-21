@@ -26,7 +26,7 @@ public class AuthService {
                 .email(request.getEmail())
                 .passwordHash(passwordService.hash(request.getPassword()))
                 .name(request.getName())
-                .role(UserRole.frontend) // роль по умолчанию
+                .role(UserRole.frontend)
                 .lookingForTeam(true)
                 .isOrganizer(false)
                 .build();
