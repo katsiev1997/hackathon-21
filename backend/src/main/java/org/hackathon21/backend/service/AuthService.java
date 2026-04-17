@@ -56,4 +56,4 @@ public class AuthService {
                 .role(user.getRole() != null ? user.getRole().name() : "frontend")
                 .build();
     }
-}
+
