@@ -6,24 +6,37 @@ import { SidebarTrigger } from "~/shared/components/ui/sidebar";
 
 type TeamBoardHeaderProps = {
   onSearchQueryChange: (query: string) => void;
+  title?: string;
+  description?: string;
+  searchPlaceholder?: string;
+  searchAriaLabel?: string;
 };
 
-export function TeamBoardHeader({ onSearchQueryChange }: TeamBoardHeaderProps) {
+export function TeamBoardHeader({
+  onSearchQueryChange,
+  title = "Find Team Board",
+  description = "Discover and join teams matching your skills and interests.",
+  searchPlaceholder = "Search teams, roles...",
+  searchAriaLabel = "Search",
+}: TeamBoardHeaderProps) {
   return (
     <div className="flex flex-col gap-4 border-b border-border/80 pb-6 lg:flex-row lg:items-start lg:justify-between">
       <div className="flex min-w-0 flex-1 flex-col gap-3">
         <div className="flex items-center gap-2">
           <SidebarTrigger className="md:hidden" />
           <div className="flex min-w-0 flex-col gap-1">
-            <h1 className="font-heading text-2xl font-semibold tracking-tight">Find Team Board</h1>
-            <p className="text-sm text-muted-foreground">
-              Discover and join teams matching your skills and interests.
-            </p>
+            <h1 className="font-heading text-2xl font-semibold tracking-tight">{title}</h1>
+            <p className="text-sm text-muted-foreground">{description}</p>
           </div>
         </div>
       </div>
       <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-end lg:max-w-xl">
-        <TeamSearchInput onQueryChange={onSearchQueryChange} className="w-full sm:max-w-xs" />
+        <TeamSearchInput
+          onQueryChange={onSearchQueryChange}
+          className="w-full sm:max-w-xs"
+          placeholder={searchPlaceholder}
+          ariaLabel={searchAriaLabel}
+        />
         <div className="flex shrink-0 items-center gap-2 self-end sm:self-auto">
           <Button type="button" variant="ghost" size="icon-sm" aria-label="Notifications">
             <Bell />

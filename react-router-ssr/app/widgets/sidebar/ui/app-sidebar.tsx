@@ -1,4 +1,4 @@
-import { Kanban, LayoutDashboard, Lightbulb, Search, Trophy, User, Users } from "lucide-react";
+import { Kanban, LayoutDashboard, Lightbulb, Search, Trophy, User } from "lucide-react";
 import type { ProfileResponse } from "~/entities/user/model/api/profile";
 import { UserInfo } from "~/entities/user/ui/user-info";
 import { ScrollArea } from "~/shared/components/ui/scroll-area";
@@ -22,11 +22,6 @@ const NAV_PRIMARY: {
   icon: typeof Search;
 }[] = [
   { href: "/dashboard", label: "Find Team Board", icon: Search },
-  {
-    href: "/dashboard/participants",
-    label: "Participants",
-    icon: Users,
-  },
   { href: "/dashboard/teams", label: "Teams Dashboard", icon: LayoutDashboard },
   { href: "/dashboard/ideas", label: "Ideas & Voting", icon: Lightbulb },
   { href: "/dashboard/kanban", label: "Kanban Board", icon: Kanban },

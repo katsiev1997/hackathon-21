@@ -7,12 +7,15 @@ type TeamSearchInputProps = {
   /** Debounced callback (ms: 300) */
   onQueryChange: (query: string) => void;
   placeholder?: string;
+  /** Подпись для доступности поля поиска */
+  ariaLabel?: string;
   className?: string;
 };
 
 export function TeamSearchInput({
   onQueryChange,
   placeholder = "Search teams, roles...",
+  ariaLabel = "Search teams",
   className,
 }: TeamSearchInputProps) {
   const [value, setValue] = useState("");
@@ -38,7 +41,7 @@ export function TeamSearchInput({
         value={value}
         onChange={(e) => setValue((e.target as HTMLInputElement).value)}
         className="h-9 pl-9"
-        aria-label="Search teams"
+        aria-label={ariaLabel}
       />
     </div>
   );

@@ -1,32 +1,29 @@
 import { Loader2Icon } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
-import { ROLE_LABELS } from "~/entities/team/lib/role-labels";
-import type { TeamRole } from "~/entities/team/model/types";
+import { RoleBadge } from "~/entities/team";
 import { useGetProfile } from "~/entities/user";
+import {
+  EMPTY_PARTICIPANT_FILTERS,
+  filterParticipants,
+  type ParticipantBoardFilters,
+  ParticipantFilterBar,
+  parseParticipantRole,
+} from "~/features/participant-board";
 import { useParticipantsQuery } from "~/features/participants/model/queries/use-participants-query";
 import type { Participant } from "~/features/participants/model/types";
 import { useInviteUserToTeamMutation } from "~/features/team-invite/model/mutations/use-invite-user-to-team-mutation";
+import { Badge } from "~/shared/components/ui/badge";
 import { Button } from "~/shared/components/ui/button";
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/shared/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "~/shared/components/ui/card";
 import { getApiErrorMessage } from "~/shared/lib/get-api-error-message";
+import { TeamBoardHeader } from "~/widgets/team-board/ui/team-board-header";
 
 function hasTeamId(teamId: string | null | undefined): boolean {
   return Boolean(teamId?.trim());
 }
 
-function roleLabel(role: string): string {
-  const r = role as TeamRole;
-  return ROLE_LABELS[r] ?? role;
-}
-
-function ParticipantRow({
+function ParticipantCard({
   participant,
   currentUserId,
   myTeamId,
@@ -41,30 +38,36 @@ function ParticipantRow({
   inviting: boolean;
   onInvite: (p: Participant) => void;
 }) {
-  const isSelf = participant.id === currentUserId;
-  const canInviteThis = canInvite && !isSelf && myTeamId && participant.id !== currentUserId;
+  const canInviteThis =
+    canInvite && Boolean(myTeamId) && Boolean(currentUserId) && participant.id !== currentUserId;
+  const role = parseParticipantRole(participant.role);
 
   return (
     <Card>
       <CardHeader className="flex flex-row items-start justify-between gap-4 space-y-0 pb-2">
-        <div className="min-w-0 space-y-1">
-          <CardTitle className="text-base">{participant.name}</CardTitle>
-          <CardDescription className="text-xs">
-            {roleLabel(participant.role)}
-            {participant.lookingForTeam ? " · Looking for a team" : null}
-          </CardDescription>
+        <div className="min-w-0 space-y-2">
+          <CardTitle className="text-base leading-tight">{participant.name}</CardTitle>
+          <RoleBadge role={role} />
         </div>
         {canInviteThis ? (
           <Button type="button" size="sm" disabled={inviting} onClick={() => onInvite(participant)}>
             {inviting ? <Loader2Icon className="size-4 animate-spin" aria-hidden /> : null}
-            Invite
+            Пригласить
           </Button>
         ) : null}
       </CardHeader>
       <CardContent className="pt-0">
-        <p className="text-xs text-muted-foreground">
-          {participant.skills?.length ? participant.skills.join(" · ") : "No skills listed"}
-        </p>
+        {participant.skills?.length ? (
+          <div className="flex flex-wrap gap-1.5">
+            {participant.skills.map((skill) => (
+              <Badge key={skill} variant="outline" className="font-normal">
+                {skill}
+              </Badge>
+            ))}
+          </div>
+        ) : (
+          <p className="text-xs text-muted-foreground">Навыки не указаны</p>
+        )}
       </CardContent>
     </Card>
   );
@@ -72,7 +75,31 @@ function ParticipantRow({
 
 export function ParticipantsBoard() {
   const { data: profile } = useGetProfile();
-  const { data: participants = [], isPending, isError, error, refetch } = useParticipantsQuery();
+  const [filters, setFilters] = useState<ParticipantBoardFilters>(EMPTY_PARTICIPANT_FILTERS);
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const apiFilters = useMemo(
+    () => (filters.role ? { role: filters.role } : undefined),
+    [filters.role],
+  );
+
+  const {
+    data: participants = [],
+    isPending,
+    isError,
+    error,
+    refetch,
+  } = useParticipantsQuery(apiFilters);
+
+  const visible = useMemo(
+    () => filterParticipants(participants, filters, searchQuery),
+    [participants, filters, searchQuery],
+  );
+
+  const handleSearchQueryChange = useCallback((q: string) => {
+    setSearchQuery(q);
+  }, []);
+
   const inviteMutation = useInviteUserToTeamMutation();
   const [invitingId, setInvitingId] = useState<string | null>(null);
 
@@ -87,7 +114,7 @@ export function ParticipantsBoard() {
         teamId: myTeamId,
         inviteeUserId: participant.id,
       });
-      toast.success("Invitation sent.");
+      toast.success("Приглашение отправлено.");
     } catch (err) {
       toast.error(await getApiErrorMessage(err));
     } finally {
@@ -96,45 +123,56 @@ export function ParticipantsBoard() {
   };
 
   return (
-    <div className="flex flex-1 flex-col gap-6 px-4 py-6 md:px-8">
-      <div>
-        <h1 className="font-heading text-2xl font-semibold tracking-tight">Participants</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          People looking for a team. If you are already in a team, use Invite to send them an
-          invitation from your account (captain or teammate — per backend rules).
-        </p>
-      </div>
+    <div className="relative flex flex-1 flex-col gap-6 px-4 py-6 md:px-8">
+      <TeamBoardHeader
+        onSearchQueryChange={handleSearchQueryChange}
+        title="Доска «Ищу команду»"
+        description="Участники без команды, которые готовы присоединиться. Здесь только те, у кого включён поиск команды."
+        searchPlaceholder="Поиск по имени или навыку…"
+        searchAriaLabel="Поиск участников по имени или навыку"
+      />
+      <ParticipantFilterBar filters={filters} onChange={setFilters} />
 
       {isPending ? (
-        <div className="flex items-center justify-center gap-2 py-16 text-muted-foreground">
+        <div className="flex flex-1 items-center justify-center gap-2 py-16 text-muted-foreground">
           <Loader2Icon className="size-6 animate-spin" aria-hidden />
-          <span className="text-sm">Loading…</span>
+          <span className="text-sm">Загрузка участников…</span>
         </div>
       ) : isError ? (
         <div className="flex flex-col items-center gap-3 py-16 text-center">
           <p className="text-sm text-destructive">
-            {error instanceof Error ? error.message : "Failed to load list."}
+            {error instanceof Error ? error.message : "Не удалось загрузить список."}
           </p>
           <Button type="button" variant="outline" size="sm" onClick={() => refetch()}>
-            Retry
+            Повторить
           </Button>
         </div>
-      ) : participants.length === 0 ? (
-        <p className="text-center text-sm text-muted-foreground">No participants found.</p>
       ) : (
-        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-2">
-          {participants.map((p) => (
-            <ParticipantRow
-              key={p.id}
-              participant={p}
-              currentUserId={profile?.id}
-              myTeamId={myTeamId}
-              canInvite={canInvite}
-              inviting={invitingId === p.id}
-              onInvite={handleInvite}
-            />
-          ))}
-        </div>
+        <>
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-2">
+            {visible.map((p) => (
+              <ParticipantCard
+                key={p.id}
+                participant={p}
+                currentUserId={profile?.id}
+                myTeamId={myTeamId}
+                canInvite={canInvite}
+                inviting={invitingId === p.id}
+                onInvite={handleInvite}
+              />
+            ))}
+          </div>
+          {visible.length === 0 && participants.length > 0 ? (
+            <p className="text-center text-sm text-muted-foreground">
+              Никто не подходит под фильтры или поиск. Попробуйте изменить условия.
+            </p>
+          ) : null}
+          {participants.length === 0 ? (
+            <p className="text-center text-sm text-muted-foreground">
+              Пока никого нет — участники появятся здесь, когда отметят, что ищут команду.
+            </p>
+          ) : null}
+        </>
       )}
     </div>
   );

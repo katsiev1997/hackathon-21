@@ -1,5 +1,5 @@
-import { TeamBoard } from "~/widgets/team-board/ui/team-board";
+import { ParticipantsBoard } from "~/features/participants";
 
 export function TeamBoardPage() {
-  return <TeamBoard />;
+  return <ParticipantsBoard />;
 }

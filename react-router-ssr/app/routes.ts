@@ -6,7 +6,6 @@ export default [
   route("auth/recovery-password", "routes/auth/recovery-password.tsx"),
   route("dashboard", "routes/dashboard/layout.tsx", [
     index("routes/dashboard/index.tsx"),
-    route("participants", "routes/dashboard/participants.tsx"),
     route("teams", "routes/dashboard/teams.tsx"),
     route("ideas", "routes/dashboard/ideas.tsx"),
     route("kanban", "routes/dashboard/kanban.tsx"),
