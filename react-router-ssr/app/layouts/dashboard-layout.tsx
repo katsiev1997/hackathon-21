@@ -26,7 +26,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
 
   return (
     <SidebarProvider>
-      <AppSidebar />
+      <AppSidebar user={data} />
       <SidebarInset className="min-h-svh overflow-x-hidden">{children}</SidebarInset>
     </SidebarProvider>
   );

@@ -1,5 +1,5 @@
 import { Kanban, LayoutDashboard, Lightbulb, Search, Trophy, User, Users } from "lucide-react";
-import type { CurrentUser } from "~/entities/user/model/types";
+import type { ProfileResponse } from "~/entities/user/model/api/profile";
 import { UserInfo } from "~/entities/user/ui/user-info";
 import { ScrollArea } from "~/shared/components/ui/scroll-area";
 import {
@@ -34,18 +34,11 @@ const NAV_PRIMARY: {
   { href: "/dashboard/profile", label: "User Profile", icon: User },
 ];
 
-const DEFAULT_USER: CurrentUser = {
-  id: "demo-user",
-  name: "Alex Chen",
-  roleLabel: "Frontend Dev",
-  role: "frontend",
-};
-
 type AppSidebarProps = {
-  user?: CurrentUser;
+  user: ProfileResponse;
 };
 
-export function AppSidebar({ user = DEFAULT_USER }: AppSidebarProps) {
+export function AppSidebar({ user }: AppSidebarProps) {
   return (
     <Sidebar collapsible="offcanvas" variant="sidebar">
       <SidebarHeader className="gap-3 px-4 py-4">

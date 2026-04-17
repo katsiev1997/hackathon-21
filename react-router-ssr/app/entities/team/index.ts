@@ -6,6 +6,7 @@ export type {
   TeamApiResponse,
   TeamMemberApiResponse,
 } from "./model/api/types";
+export { useTeamById } from "./model/queries/use-team-by-id";
 export { useTeamsQuery } from "./model/queries/use-teams";
 export { teamsMutationKeys, teamsQueryKeys } from "./model/query-keys";
 export type { TeamCardData, TeamMember, TeamRole } from "./model/types";

@@ -1,5 +1,6 @@
+import { useTeamById } from "~/entities/team";
 import { useGetProfile } from "~/entities/user";
-import { Badge } from "~/shared/components/ui/badge";
+import { ProfileEditForm } from "~/features/profile-edit";
 import { Button } from "~/shared/components/ui/button";
 import {
   Card,
@@ -16,6 +17,7 @@ export function meta() {
 
 export default function Profile() {
   const { data, isLoading, isError, error, refetch, isFetching } = useGetProfile();
+  const { name: teamName, isNameLoading: isTeamNameLoading } = useTeamById(data?.teamId);
 
   if (isLoading) {
     return (
@@ -54,55 +56,17 @@ export default function Profile() {
       <Card>
         <CardHeader>
           <CardTitle>Профиль</CardTitle>
-          <CardDescription>Основные данные пользователя</CardDescription>
+          <CardDescription>
+            Редактируйте имя, роль и навыки. Статус команды отображается автоматически. Изменения
+            сохраняются на сервере.
+          </CardDescription>
         </CardHeader>
-        <CardContent className="space-y-3">
-          <div className="grid gap-1">
-            <p className="text-xs text-muted-foreground">Имя</p>
-            <p className="text-sm font-medium">{data.name}</p>
-          </div>
-          <div className="grid gap-1">
-            <p className="text-xs text-muted-foreground">Email</p>
-            <p className="text-sm">{data.email}</p>
-          </div>
-          <div className="grid gap-1">
-            <p className="text-xs text-muted-foreground">Роль</p>
-            <Badge variant="secondary" className="w-fit">
-              {data.role}
-            </Badge>
-          </div>
-          <div className="grid gap-1">
-            <p className="text-xs text-muted-foreground">Статус поиска команды</p>
-            <Badge variant={data.lookingForTeam ? "default" : "outline"} className="w-fit">
-              {data.lookingForTeam ? "Ищу команду" : "В команде / не ищу"}
-            </Badge>
-          </div>
-          {data.teamId ? (
-            <div className="grid gap-1">
-              <p className="text-xs text-muted-foreground">Team ID</p>
-              <p className="text-sm break-all">{data.teamId}</p>
-            </div>
-          ) : null}
-        </CardContent>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Навыки</CardTitle>
-          <CardDescription>Текущий стек из профиля</CardDescription>
-        </CardHeader>
-        <CardContent>
-          {data.skills.length > 0 ? (
-            <div className="flex flex-wrap gap-2">
-              {data.skills.map((skill) => (
-                <Badge key={skill} variant="outline">
-                  {skill}
-                </Badge>
-              ))}
-            </div>
-          ) : (
-            <p className="text-sm text-muted-foreground">Навыки пока не добавлены</p>
-          )}
+        <CardContent className="space-y-4">
+          <ProfileEditForm
+            profile={data}
+            teamName={teamName}
+            isTeamNameLoading={isTeamNameLoading}
+          />
         </CardContent>
       </Card>
     </div>
