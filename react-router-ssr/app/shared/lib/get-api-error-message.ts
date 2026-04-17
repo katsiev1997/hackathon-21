@@ -4,10 +4,11 @@ import { HTTPError } from "ky";
 export async function getApiErrorMessage(error: unknown): Promise<string> {
   if (error instanceof HTTPError) {
     try {
-      const body = (await error.response.json()) as { message?: string };
-      if (body.message) {
-        console.log(body.message);
-        return body.message;
+      const body = (await error.response.json()) as { message?: string; error?: string };
+      const text = body.message ?? body.error;
+      if (text) {
+        console.log(text);
+        return text;
       }
     } catch {
       /* тело не JSON */

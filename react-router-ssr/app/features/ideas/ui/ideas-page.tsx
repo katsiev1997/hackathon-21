@@ -4,6 +4,8 @@ import { toast } from "sonner";
 import type { Idea, IdeaStatus } from "~/entities/idea";
 import { useIdeasQuery } from "~/entities/idea";
 import { useGetProfile } from "~/entities/user";
+import { logSubmitForVotingDebug } from "~/features/ideas/lib/log-submit-for-voting-debug";
+import { useSubmitIdeaForVotingMutation } from "~/features/ideas/model/mutations/use-submit-idea-for-voting-mutation";
 import { useVoteIdeaMutation } from "~/features/ideas/model/mutations/use-vote-idea-mutation";
 import { Badge } from "~/shared/components/ui/badge";
 import { Button } from "~/shared/components/ui/button";
@@ -52,8 +54,12 @@ function IdeaVoteSection({
   if (!profileLoading) {
     if (!currentUserId) hint = "Войдите в аккаунт, чтобы голосовать.";
     else if (isOwn) hint = "Нельзя голосовать за свою идею.";
-    else if (!isVotingOpen)
-      hint = "Голосование будет доступно после перевода идеи в статус «На голосовании».";
+    else if (!isVotingOpen) {
+      hint =
+        idea.status === "draft"
+          ? "После того как автор отправит идею на голосование, вы сможете её оценить."
+          : "Голосование доступно только в статусе «На голосовании».";
+    }
   }
 
   const busy = votingForId === idea.id;
@@ -95,10 +101,12 @@ export function IdeasPage() {
   const [listFilter, setListFilter] = useState<ListFilter>("all");
   const [createOpen, setCreateOpen] = useState(false);
   const [votingForId, setVotingForId] = useState<string | null>(null);
+  const [submittingForVotingId, setSubmittingForVotingId] = useState<string | null>(null);
 
   const { data: profile, isLoading: profileLoading } = useGetProfile();
   const ideasQuery = useIdeasQuery(listFilter === "voting" ? { status: "voting" } : undefined);
   const voteMutation = useVoteIdeaMutation();
+  const submitForVotingMutation = useSubmitIdeaForVotingMutation();
 
   const handleVote = useCallback(
     async (ideaId: string, score: number) => {
@@ -113,6 +121,22 @@ export function IdeasPage() {
       }
     },
     [voteMutation],
+  );
+
+  const handleSubmitForVoting = useCallback(
+    async (idea: Idea) => {
+      logSubmitForVotingDebug(idea, profile?.id);
+      setSubmittingForVotingId(idea.id);
+      try {
+        await submitForVotingMutation.mutateAsync(idea.id);
+        toast.success("Идея отправлена на голосование.");
+      } catch (err) {
+        toast.error(await getApiErrorMessage(err));
+      } finally {
+        setSubmittingForVotingId(null);
+      }
+    },
+    [submitForVotingMutation, profile?.id],
   );
 
   const ideas = ideasQuery.data ?? [];
@@ -210,6 +234,26 @@ export function IdeasPage() {
                     {idea.votesCount}
                   </span>
                 </div>
+                {profile?.id === idea.authorId && idea.status === "draft" ? (
+                  <div className="flex flex-col gap-2 rounded-md border border-border/60 bg-muted/30 p-3">
+                    <p className="text-xs text-muted-foreground">
+                      Черновик: отправьте идею на голосование, чтобы другие участники могли её
+                      оценить.
+                    </p>
+                    <Button
+                      type="button"
+                      size="sm"
+                      className="w-fit"
+                      disabled={submittingForVotingId === idea.id}
+                      onClick={() => void handleSubmitForVoting(idea)}
+                    >
+                      {submittingForVotingId === idea.id ? (
+                        <Loader2Icon className="size-4 animate-spin" aria-hidden />
+                      ) : null}
+                      Отправить на голосование
+                    </Button>
+                  </div>
+                ) : null}
                 <IdeaVoteSection
                   idea={idea}
                   currentUserId={profile?.id}

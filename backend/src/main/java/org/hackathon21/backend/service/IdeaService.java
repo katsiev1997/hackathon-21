@@ -12,12 +12,14 @@ import org.hackathon21.backend.repository.IdeaRepository;
 import org.hackathon21.backend.repository.UserRepository;
 import org.hackathon21.backend.repository.VoteRepository;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class IdeaService {
@@ -83,6 +85,38 @@ public class IdeaService {
                 .avgScore(avgScore)
                 .votesCount(votesCount)
                 .build();
+    }
+
+    /**
+     * Переводит идею из черновика в статус голосования. Доступно только автору.
+     */
+    @Transactional
+    public IdeaResponse submitForVoting(UUID userId, UUID ideaId) {
+        userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        Idea idea = ideaRepository.findById(ideaId)
+                .orElseThrow(() -> new RuntimeException("Idea not found"));
+
+        boolean authorMatches = idea.getAuthorId().equals(userId);
+        log.warn(
+                "[submit-for-voting] ideaId={} status={} authorId={} currentUserId(JWT)={} authorMatches={}",
+                ideaId,
+                idea.getStatus(),
+                idea.getAuthorId(),
+                userId,
+                authorMatches);
+
+        if (!authorMatches) {
+            throw new RuntimeException("forbidden: only author can submit idea for voting");
+        }
+        if (idea.getStatus() != IdeaStatus.draft) {
+            throw new RuntimeException("Idea can only be submitted for voting from draft status");
+        }
+
+        idea.setStatus(IdeaStatus.voting);
+        ideaRepository.save(idea);
+
+        return buildIdeaResponse(idea);
     }
 
     private IdeaResponse buildIdeaResponse(Idea idea) {

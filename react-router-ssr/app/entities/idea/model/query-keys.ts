@@ -8,4 +8,5 @@ export const ideasQueryKeys = {
 export const ideasMutationKeys = {
   create: [...ideasQueryKeys.all, "create"] as const,
   vote: [...ideasQueryKeys.all, "vote"] as const,
+  submitForVoting: [...ideasQueryKeys.all, "submit-for-voting"] as const,
 };

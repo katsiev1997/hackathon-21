@@ -73,8 +73,8 @@ export function CreateIdeaDialog({ open, onOpenChange }: CreateIdeaDialogProps) 
         <DialogHeader>
           <DialogTitle>Предложить идею</DialogTitle>
           <DialogDescription>
-            Укажите название и краткое описание. Новые идеи сохраняются как черновики; голосование
-            станет доступно после перевода идеи в статус «На голосовании».
+            Укажите название и краткое описание. Новые идеи сохраняются как черновики. В списке идей
+            нажмите «Отправить на голосование», чтобы другие могли оценить предложение.
           </DialogDescription>
           {formError ? (
             <p className="text-sm text-destructive" role="alert">
