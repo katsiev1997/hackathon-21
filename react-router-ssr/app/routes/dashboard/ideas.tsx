@@ -1,14 +1,9 @@
-import { DashboardPlaceholderPage } from "~/shared/components/dashboard-placeholder-page";
+import { IdeasPage } from "~/features/ideas";
 
 export function meta() {
-  return [{ title: "Ideas & Voting — HackForge" }];
+  return [{ title: "Идеи и голосование — HackForge" }];
 }
 
 export default function Ideas() {
-  return (
-    <DashboardPlaceholderPage
-      title="Ideas & Voting"
-      description="Publish ideas and vote on community submissions."
-    />
-  );
+  return <IdeasPage />;
 }

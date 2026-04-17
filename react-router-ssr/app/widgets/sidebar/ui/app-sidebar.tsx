@@ -23,7 +23,7 @@ const NAV_PRIMARY: {
 }[] = [
   { href: "/dashboard", label: "Find Team Board", icon: Search },
   { href: "/dashboard/teams", label: "Teams Dashboard", icon: LayoutDashboard },
-  { href: "/dashboard/ideas", label: "Ideas & Voting", icon: Lightbulb },
+  { href: "/dashboard/ideas", label: "Идеи и голосование", icon: Lightbulb },
   { href: "/dashboard/kanban", label: "Kanban Board", icon: Kanban },
   { href: "/dashboard/leaderboard", label: "Leaderboard", icon: Trophy },
   { href: "/dashboard/profile", label: "User Profile", icon: User },
