@@ -29,12 +29,48 @@ function showFieldValidationMessage(meta: {
   return !meta.isValid && (meta.isTouched || meta.errors.length > 0);
 }
 
-const authSchema = z.object({
+const loginAuthSchema = z.object({
   email: z.email("Введите корректный email адрес"),
   name: z.string(),
   password: z.string().min(8, "Пароль должен содержать минимум 8 символов"),
   confirmPassword: z.string(),
 });
+
+const signupAuthSchema = z
+  .object({
+    email: z.email("Введите корректный email адрес"),
+    name: z.string().trim().min(1, "Введите имя"),
+    password: z.string().min(8, "Пароль должен содержать минимум 8 символов"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Пароли не совпадают",
+    path: ["confirmPassword"],
+  });
+
+type AuthFormValues = z.infer<typeof loginAuthSchema>;
+
+function isAuthFormReady(tab: AuthTab, values: AuthFormValues): boolean {
+  const schema = tab === "login" ? loginAuthSchema : signupAuthSchema;
+  return schema.safeParse(values).success;
+}
+
+const EMAIL_CONFLICT_MESSAGE = "Этот email уже занят";
+
+/** 409 Conflict (занятый email) — без привязки к `instanceof` из ky. */
+function isConflictHttpError(error: unknown): boolean {
+  let current: unknown = error;
+  const seen = new Set<unknown>();
+  while (current != null && !seen.has(current)) {
+    seen.add(current);
+    if (typeof current === "object" && current !== null && "response" in current) {
+      const res = (current as { response: unknown }).response;
+      if (res instanceof Response && res.status === 409) return true;
+    }
+    current = current instanceof Error ? current.cause : undefined;
+  }
+  return false;
+}
 
 export function AuthForm() {
   const [tab, setTab] = useState<AuthTab>("login");
@@ -54,15 +90,11 @@ export function AuthForm() {
       confirmPassword: "",
     },
     validators: {
-      onSubmit: authSchema,
-      onBlur: authSchema,
+      onSubmit: tab === "login" ? loginAuthSchema : signupAuthSchema,
+      onBlur: tab === "login" ? loginAuthSchema : signupAuthSchema,
     },
     onSubmit: async ({ value }) => {
       setFormError(null);
-      if (tab === "signup" && !value.name.trim()) {
-        setFormError("Введите имя");
-        return;
-      }
       try {
         const loginData =
           tab === "login"
@@ -85,7 +117,11 @@ export function AuthForm() {
         localStorage.setItem("x-user-id", loginData.id);
         void navigate("/dashboard");
       } catch (error) {
-        setFormError(await getApiErrorMessage(error));
+        if (isConflictHttpError(error)) {
+          setFormError(EMAIL_CONFLICT_MESSAGE);
+        } else {
+          setFormError(await getApiErrorMessage(error));
+        }
       }
     },
   });
@@ -337,22 +373,29 @@ export function AuthForm() {
             </p>
           ) : null}
 
-          <Button
-            type="submit"
-            size="lg"
-            className="h-10 w-full font-medium"
-            disabled={
-              form.state.isSubmitting || loginMutation.isPending || registerMutation.isPending
-            }
-          >
-            {form.state.isSubmitting ? (
-              <Loader2Icon className="size-4 animate-spin" />
-            ) : tab === "login" ? (
-              "Войти"
-            ) : (
-              "Создать аккаунт"
+          <form.Subscribe selector={(state) => state.values}>
+            {(values) => (
+              <Button
+                type="submit"
+                size="lg"
+                className="h-10 w-full font-medium"
+                disabled={
+                  form.state.isSubmitting ||
+                  loginMutation.isPending ||
+                  registerMutation.isPending ||
+                  !isAuthFormReady(tab, values)
+                }
+              >
+                {form.state.isSubmitting ? (
+                  <Loader2Icon className="size-4 animate-spin" />
+                ) : tab === "login" ? (
+                  "Войти"
+                ) : (
+                  "Создать аккаунт"
+                )}
+              </Button>
             )}
-          </Button>
+          </form.Subscribe>
         </form>
 
         <p className="text-center text-xs leading-relaxed text-muted-foreground">

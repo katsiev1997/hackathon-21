@@ -5,7 +5,10 @@ export async function getApiErrorMessage(error: unknown): Promise<string> {
   if (error instanceof HTTPError) {
     try {
       const body = (await error.response.json()) as { message?: string };
-      if (body.message) return body.message;
+      if (body.message) {
+        console.log(body.message);
+        return body.message;
+      }
     } catch {
       /* тело не JSON */
     }
