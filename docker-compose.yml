@@ -1,30 +1,36 @@
+
+
+
 services:
   frontend:
     image: node:20-alpine
     working_dir: /app
     volumes:
-      - ./frontend:/app
+      - ./react-router-ssr:/app
+      - /app/node_modules
     ports:
-      - "5173:5173"
-    command: sh -c "npm install && npm run dev -- --host 0.0.0.0 --port 5173"
+      - "3000:3000"
+    command: sh -c "npm install && npm run build && npm start"
+    depends_on:
+      - backend
+
+  backend:
+    build: ./backend
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/hackforge
+      SPRING_DATASOURCE_USERNAME: hackforge
+      SPRING_DATASOURCE_PASSWORD: hackforge
 
   postgres:
     image: postgres:16-alpine
-    restart: unless-stopped
     environment:
       POSTGRES_DB: hackforge
       POSTGRES_USER: hackforge
       POSTGRES_PASSWORD: hackforge
     ports:
       - "5432:5432"
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./docs/database-schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
-volumes:
-  postgres_data:
