@@ -1,25 +1,11 @@
-
-
-
 services:
-  frontend:
-    image: node:20-alpine
-    working_dir: /app
-    volumes:
-      - ./react-router-ssr:/app
-      - /app/node_modules
-    ports:
-      - "3000:3000"
-    command: sh -c "npm install && npm run build && npm start"
-    depends_on:
-      - backend
-
   backend:
     build: ./backend
     ports:
       - "8080:8080"
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/hackforge
       SPRING_DATASOURCE_USERNAME: hackforge
@@ -33,4 +19,18 @@ services:
       POSTGRES_PASSWORD: hackforge
     ports:
       - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U hackforge -d hackforge"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
 
+  react-router-ssr:
+    build: ./react-router-ssr
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+      PORT: 3000
+    depends_on:
+      - backend
