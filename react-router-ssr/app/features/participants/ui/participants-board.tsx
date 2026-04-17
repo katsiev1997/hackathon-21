@@ -2,6 +2,7 @@ import { Loader2Icon } from "lucide-react";
 import { useCallback, useMemo, useState } from "react";
 import { toast } from "sonner";
 import { RoleBadge } from "~/entities/team";
+import { useTeamDetailQuery } from "~/entities/team/model/queries/use-team-detail";
 import { useGetProfile } from "~/entities/user";
 import {
   EMPTY_PARTICIPANT_FILTERS,
@@ -13,6 +14,11 @@ import {
 import { useParticipantsQuery } from "~/features/participants/model/queries/use-participants-query";
 import type { Participant } from "~/features/participants/model/types";
 import { useInviteUserToTeamMutation } from "~/features/team-invite/model/mutations/use-invite-user-to-team-mutation";
+import {
+  RecommendedForTeamPanel,
+  type RecommendedParticipant,
+  useRecommendedParticipantsQuery,
+} from "~/features/team-recommendations";
 import { Badge } from "~/shared/components/ui/badge";
 import { Button } from "~/shared/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "~/shared/components/ui/card";
@@ -106,14 +112,23 @@ export function ParticipantsBoard() {
   const myTeamId = profile?.teamId;
   const canInvite = hasTeamId(myTeamId);
 
-  const handleInvite = async (participant: Participant) => {
+  const { data: myTeam } = useTeamDetailQuery(myTeamId ?? undefined);
+  const teamMemberCount = myTeam?.members?.length ?? 0;
+  const showRecommendations = Boolean(myTeamId?.trim()) && teamMemberCount < 5;
+
+  const {
+    data: recommended = [],
+    isPending: recPending,
+    isError: recError,
+    error: recErr,
+    refetch: refetchRecommended,
+  } = useRecommendedParticipantsQuery(myTeamId ?? undefined, showRecommendations);
+
+  const inviteUserById = async (inviteeUserId: string) => {
     if (!myTeamId) return;
-    setInvitingId(participant.id);
+    setInvitingId(inviteeUserId);
     try {
-      await inviteMutation.mutateAsync({
-        teamId: myTeamId,
-        inviteeUserId: participant.id,
-      });
+      await inviteMutation.mutateAsync({ teamId: myTeamId, inviteeUserId });
       toast.success("Приглашение отправлено.");
     } catch (err) {
       toast.error(await getApiErrorMessage(err));
@@ -121,6 +136,9 @@ export function ParticipantsBoard() {
       setInvitingId(null);
     }
   };
+
+  const handleInvite = (participant: Participant) => void inviteUserById(participant.id);
+  const handleInviteRecommended = (row: RecommendedParticipant) => void inviteUserById(row.id);
 
   return (
     <div className="relative flex flex-1 flex-col gap-6 px-4 py-6 md:px-8">
@@ -132,6 +150,18 @@ export function ParticipantsBoard() {
         searchAriaLabel="Поиск участников по имени или навыку"
       />
       <ParticipantFilterBar filters={filters} onChange={setFilters} />
+
+      {showRecommendations ? (
+        <RecommendedForTeamPanel
+          rows={recommended}
+          isPending={recPending}
+          isError={recError}
+          error={recError ? (recErr instanceof Error ? recErr : new Error(String(recErr))) : null}
+          onRetry={() => void refetchRecommended()}
+          invitingId={invitingId}
+          onInvite={handleInviteRecommended}
+        />
+      ) : null}
 
       {isPending ? (
         <div className="flex flex-1 items-center justify-center gap-2 py-16 text-muted-foreground">

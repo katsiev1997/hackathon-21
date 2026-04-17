@@ -21,6 +21,10 @@ export function useInviteUserToTeamMutation(options?: Options) {
     ...rest,
     onSuccess: async (data, variables, onMutateResult, context) => {
       await queryClient.invalidateQueries({ queryKey: teamsQueryKeys.list() });
+      await queryClient.invalidateQueries({
+        queryKey: teamsQueryKeys.recommended(variables.teamId),
+      });
+      await queryClient.invalidateQueries({ queryKey: teamsQueryKeys.detail(variables.teamId) });
       await userOnSuccess?.(data, variables, onMutateResult, context);
     },
   });
