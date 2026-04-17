@@ -8,7 +8,7 @@ STAGED_RR=$(git diff --cached --name-only -- 'react-router-ssr/' || true)
 echo "Biome: проверка и автофикс по staged (react-router-ssr)…"
 (
 	cd react-router-ssr
-	npx biome check --write --staged --no-errors-on-unmatched --files-ignore-unknown=true
+	bunx biome check --write --staged --no-errors-on-unmatched --files-ignore-unknown=true
 )
 
 while IFS= read -r f; do
@@ -18,6 +18,6 @@ $STAGED_RR
 EOF
 
 echo "Сборка react-router-ssr…"
-(cd react-router-ssr && npm run build)
+(cd react-router-ssr && bun run build)
 
 echo "pre-commit: успешно."
