@@ -1,15 +1,16 @@
-# Hackathon 21 Project
+# Hackathon Project
 
-## 📦 Requirements
-- Docker
-- Docker Compose
-- Node.js (optional, for local frontend run)
+Full-stack приложение:
+- Backend: Spring Boot (Java 17)
+- Frontend: React Router SSR (Node.js)
+- Database: PostgreSQL
+- Docker окружение
 
 ---
 
-## 🚀 Start project
+# 🚀 ЗАПУСК ПРОЕКТА
 
-### 1. Start services
+## ▶️ ОДНА КОМАНДА
 
 ```bash
-docker-compose up -d
+docker compose up --build
