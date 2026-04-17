@@ -9,7 +9,6 @@ import java.util.UUID;
 
 @Data
 @Builder
-
 public class ParticipantResponse {
     private UUID id;
     private String name;

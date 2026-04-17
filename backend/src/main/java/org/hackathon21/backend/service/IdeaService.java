@@ -59,17 +59,14 @@ public class IdeaService {
         Idea idea = ideaRepository.findById(ideaId)
                 .orElseThrow(() -> new RuntimeException("Idea not found"));
 
-        // Нельзя голосовать за свою идею
         if (idea.getAuthorId().equals(userId)) {
             throw new RuntimeException("Cannot vote for your own idea");
         }
 
-        // Голосовать можно только за идеи в статусе "voting"
         if (idea.getStatus() != IdeaStatus.voting) {
             throw new RuntimeException("Idea is not in voting status");
         }
 
-        // Обновляем или создаём голос
         Vote vote = voteRepository.findByIdeaIdAndUserId(ideaId, userId)
                 .orElse(Vote.builder()
                         .ideaId(ideaId)

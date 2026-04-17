@@ -11,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.UUID;
 
 @Service
@@ -83,7 +84,6 @@ public class InviteService {
         Team team = teamRepository.findById(invite.getTeamId())
                 .orElseThrow(() -> new RuntimeException("Team not found"));
 
-        // Проверка лимита команды
         long memberCount = userRepository.findAll().stream()
                 .filter(u -> team.getId().equals(u.getTeamId()))
                 .count();
@@ -91,7 +91,6 @@ public class InviteService {
             throw new RuntimeException("Team is full");
         }
 
-        // Добавляем пользователя в команду
         user.setTeamId(team.getId());
         user.setLookingForTeam(false);
         user.setJoinedTeamAt(LocalDateTime.now());
@@ -116,5 +115,9 @@ public class InviteService {
 
         invite.setStatus(InviteStatus.declined);
         inviteRepository.save(invite);
+    }
+
+    public List<Invite> getPendingForCaptain(UUID teamId) {
+        return inviteRepository.findByTeamIdAndStatus(teamId, InviteStatus.pending_captain);
     }
 }

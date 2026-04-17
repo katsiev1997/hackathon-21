@@ -1,10 +1,13 @@
 package org.hackathon21.backend.controller;
 
 
+import org.hackathon21.backend.entity.Invite;
 import org.hackathon21.backend.service.InviteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 import java.util.UUID;
 
 @RestController
@@ -36,5 +39,10 @@ public class InviteController {
     public ResponseEntity<Void> declineInvite(@PathVariable UUID id, @RequestHeader("X-User-ID") UUID userId) {
         inviteService.declineInvite(id, userId);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/team/{teamId}/pending")
+    public ResponseEntity<List<Invite>> getPendingForCaptain(@PathVariable UUID teamId) {
+        return ResponseEntity.ok(inviteService.getPendingForCaptain(teamId));
     }
 }
