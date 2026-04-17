@@ -1,32 +1,14 @@
-import { Button } from "~/shared/components/ui/button";
+import { Link } from "react-router";
 
-type TeamCardActionsProps = {
-	teamId: string;
-};
-
-export function TeamCardActions({ teamId }: TeamCardActionsProps) {
-	return (
-		<div className="flex items-center gap-2">
-			<Button
-				type="button"
-				variant="ghost"
-				size="sm"
-				className="text-muted-foreground"
-				onClick={() => {
-					console.log("Message team:", teamId);
-				}}
-			>
-				Message
-			</Button>
-			<Button
-				type="button"
-				size="sm"
-				onClick={() => {
-					console.log("Request invite:", teamId);
-				}}
-			>
-				Request Invite
-			</Button>
-		</div>
-	);
+/** Подсказка: вступление по модели README — приглашение от участника команды, не self-invite. */
+export function TeamCardActions() {
+  return (
+    <p className="max-w-[13rem] text-right text-[11px] leading-snug text-muted-foreground">
+      To join, you need an invitation from someone already in that team. If you recruit, invite
+      people here:{" "}
+      <Link to="/dashboard" className="text-primary underline underline-offset-2">
+        Find Team Board
+      </Link>
+    </p>
+  );
 }

@@ -1,7 +1,7 @@
-import { Loader2 } from "lucide-react";
-import { useEffect, type ReactNode } from "react";
-import { redirect, useNavigate } from "react-router";
+import type { ReactNode } from "react";
+import { Navigate } from "react-router";
 import { useGetProfile } from "~/entities/user";
+import { MainLoader } from "~/shared/components/main-loader";
 import { SidebarInset, SidebarProvider } from "~/shared/components/ui/sidebar";
 import { AppSidebar } from "~/widgets/sidebar/ui/app-sidebar";
 
@@ -11,28 +11,19 @@ type DashboardLayoutProps = {
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
   const { data, isLoading } = useGetProfile();
-  const navigate = useNavigate();
-
-  useEffect(() => {
-    if (!data && !isLoading) {
-      navigate("/");
-    }
-  }, [data, isLoading]);
 
   if (isLoading) {
-    return (
-      <div className="flex h-svh items-center justify-center">
-        <Loader2 className="size-10 animate-spin" />
-      </div>
-    );
+    return <MainLoader />;
+  }
+
+  if (!data) {
+    return <Navigate to="/" replace />;
   }
 
   return (
     <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset className="min-h-svh overflow-x-hidden">
-        {children}
-      </SidebarInset>
+      <AppSidebar user={data} />
+      <SidebarInset className="min-h-svh overflow-x-hidden">{children}</SidebarInset>
     </SidebarProvider>
   );
 }

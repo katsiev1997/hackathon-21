@@ -1,8 +1,23 @@
-if git diff --cached --name-only | grep -q '^frontend/'; then
-  echo "Запускаем lint-staged…"
-  (cd frontend && npx lint-staged)
-  echo "lint-staged завершён."
-  echo "Проверяем сборку…"
-  (cd frontend && npm run build)
-  echo "Сборка прошла."
-fi
+#!/usr/bin/env sh
+set -e
+
+# Пути из индекса до biome (после --write нужно снова добавить в коммит)
+STAGED_RR=$(git diff --cached --name-only -- 'react-router-ssr/' || true)
+[ -z "$STAGED_RR" ] && exit 0
+
+echo "Biome: проверка и автофикс по staged (react-router-ssr)…"
+(
+	cd react-router-ssr
+	bunx biome check --write --staged --no-errors-on-unmatched --files-ignore-unknown=true
+)
+
+while IFS= read -r f; do
+	[ -n "$f" ] && git add -- "$f"
+done <<EOF
+$STAGED_RR
+EOF
+
+echo "Сборка react-router-ssr…"
+(cd react-router-ssr && bun run build)
+
+echo "pre-commit: успешно."
