@@ -1,4 +1,5 @@
 import { Bell } from "lucide-react";
+import type { TeamCardData } from "~/entities/team/model/types";
 import { CreateTeamButton } from "~/features/create-team/ui/create-team-button";
 import { TeamSearchInput } from "~/features/team-search/ui/team-search-input";
 import { Button } from "~/shared/components/ui/button";
@@ -6,9 +7,13 @@ import { SidebarTrigger } from "~/shared/components/ui/sidebar";
 
 type TeamBoardHeaderProps = {
 	onSearchQueryChange: (query: string) => void;
+	onTeamCreated?: (team: TeamCardData) => void;
 };
 
-export function TeamBoardHeader({ onSearchQueryChange }: TeamBoardHeaderProps) {
+export function TeamBoardHeader({
+	onSearchQueryChange,
+	onTeamCreated,
+}: TeamBoardHeaderProps) {
 	return (
 		<div className="flex flex-col gap-4 border-b border-border/80 pb-6 lg:flex-row lg:items-start lg:justify-between">
 			<div className="flex min-w-0 flex-1 flex-col gap-3">
@@ -38,7 +43,7 @@ export function TeamBoardHeader({ onSearchQueryChange }: TeamBoardHeaderProps) {
 					>
 						<Bell />
 					</Button>
-					<CreateTeamButton />
+					<CreateTeamButton onTeamCreated={onTeamCreated} />
 				</div>
 			</div>
 		</div>

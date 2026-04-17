@@ -1,9 +1,13 @@
 import { useForm } from "@tanstack/react-form";
 import { Loader2Icon } from "lucide-react";
-import { useCallback } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { z } from "zod";
 import { ROLE_LABELS } from "~/entities/team/lib/role-labels";
-import type { TeamRole } from "~/entities/team/model/types";
+import type { TeamCardData, TeamRole } from "~/entities/team/model/types";
+import {
+	mapTeamApiResponseToCardData,
+	useCreateTeamMutation,
+} from "~/features/create-team/model";
 import { TRACK_OPTIONS } from "~/features/team-filter/model/types";
 import { Button } from "~/shared/components/ui/button";
 import { Checkbox } from "~/shared/components/ui/checkbox";
@@ -17,6 +21,7 @@ import {
 } from "~/shared/components/ui/dialog";
 import { Input } from "~/shared/components/ui/input";
 import { Label } from "~/shared/components/ui/label";
+import { getApiErrorMessage } from "~/shared/lib/get-api-error-message";
 import { cn, formatFieldErrors } from "~/shared/lib/utils";
 
 const ROLES: TeamRole[] = [
@@ -55,13 +60,21 @@ function showFieldValidationMessage(meta: {
 type CreateTeamDialogProps = {
 	open: boolean;
 	onOpenChange: (open: boolean) => void;
+	onTeamCreated?: (team: TeamCardData) => void;
 };
 
 export function CreateTeamDialog({
 	open,
 	onOpenChange,
+	onTeamCreated,
 }: CreateTeamDialogProps) {
 	const defaultTrack: string = TRACK_OPTIONS[0] ?? "";
+	const createTeamMutation = useCreateTeamMutation();
+	const [formError, setFormError] = useState<string | null>(null);
+
+	useEffect(() => {
+		if (open) setFormError(null);
+	}, [open]);
 
 	const form = useForm({
 		defaultValues: {
@@ -75,9 +88,23 @@ export function CreateTeamDialog({
 			onBlur: createTeamSchema,
 		},
 		onSubmit: async ({ value }) => {
-			console.log("Create team:", value);
-			onOpenChange(false);
-			form.reset();
+			setFormError(null);
+			try {
+				const team = await createTeamMutation.mutateAsync({
+					name: value.name.trim(),
+					description: value.description.trim(),
+				});
+				onTeamCreated?.(
+					mapTeamApiResponseToCardData(team, {
+						track: value.track,
+						openRoles: value.openRoles,
+					}),
+				);
+				onOpenChange(false);
+				form.reset();
+			} catch (err) {
+				setFormError(await getApiErrorMessage(err));
+			}
 		},
 	});
 
@@ -96,6 +123,11 @@ export function CreateTeamDialog({
 						Add a name, describe the idea, and pick open roles. You can edit
 						details later.
 					</DialogDescription>
+					{formError ? (
+						<p className="text-sm text-destructive" role="alert">
+							{formError}
+						</p>
+					) : null}
 				</DialogHeader>
 
 				<form
@@ -243,8 +275,11 @@ export function CreateTeamDialog({
 						>
 							Cancel
 						</Button>
-						<Button type="submit" disabled={form.state.isSubmitting}>
-							{form.state.isSubmitting ? (
+						<Button
+							type="submit"
+							disabled={form.state.isSubmitting || createTeamMutation.isPending}
+						>
+							{form.state.isSubmitting || createTeamMutation.isPending ? (
 								<Loader2Icon
 									className="animate-spin"
 									data-icon="inline-start"

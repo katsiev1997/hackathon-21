@@ -31,9 +31,16 @@ export function TeamBoard() {
 		);
 	}, []);
 
+	const handleTeamCreated = useCallback((team: TeamCardData) => {
+		setTeams((prev) => [team, ...prev]);
+	}, []);
+
 	return (
 		<div className="relative flex flex-1 flex-col gap-6 px-4 py-6 md:px-8">
-			<TeamBoardHeader onSearchQueryChange={handleSearchQueryChange} />
+			<TeamBoardHeader
+				onSearchQueryChange={handleSearchQueryChange}
+				onTeamCreated={handleTeamCreated}
+			/>
 			<TeamFilterBar filters={filters} onChange={setFilters} />
 			<TeamGrid teams={visible} onBookmarkToggle={toggleBookmark} />
 			{visible.length === 0 && (
