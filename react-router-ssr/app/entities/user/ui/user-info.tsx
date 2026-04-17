@@ -1,4 +1,4 @@
-import { Avatar, AvatarFallback, AvatarImage } from "~/shared/components/ui/avatar";
+import { Avatar, AvatarFallback } from "~/shared/components/ui/avatar";
 import type { ProfileResponse } from "../model/api/profile";
 
 type UserInfoProps = {
