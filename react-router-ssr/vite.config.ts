@@ -8,7 +8,7 @@ export default defineConfig({
     tsconfigPaths: true,
   },
   server: {
-    port: 5173,
+    port: 3000,
     host: true,
     allowedHosts: ["localhost", "127.0.0.1"],
     proxy: {
