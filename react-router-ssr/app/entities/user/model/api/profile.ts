@@ -7,7 +7,9 @@ export interface ProfileResponse {
   role: string;
   skills: string[];
   lookingForTeam: boolean;
-  teamId: string;
+  /** null если пользователь не в команде */
+  teamId: string | null;
+  isOrganizer: boolean;
 }
 
 export const getProfile = async (): Promise<ProfileResponse> => {

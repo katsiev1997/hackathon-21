@@ -1,14 +1,9 @@
-import { DashboardPlaceholderPage } from "~/shared/components/dashboard-placeholder-page";
+import { KanbanPage } from "~/features/kanban";
 
 export function meta() {
-  return [{ title: "Kanban Board — HackForge" }];
+  return [{ title: "Канбан — HackForge" }];
 }
 
 export default function Kanban() {
-  return (
-    <DashboardPlaceholderPage
-      title="Kanban Board"
-      description="Track tasks across your team workflow."
-    />
-  );
+  return <KanbanPage />;
 }

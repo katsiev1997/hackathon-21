@@ -1,14 +1,9 @@
-import { DashboardPlaceholderPage } from "~/shared/components/dashboard-placeholder-page";
+import { TeamsDashboardPage } from "~/widgets/teams-dashboard/ui/teams-dashboard-page";
 
 export function meta() {
-  return [{ title: "Teams Dashboard — HackForge" }];
+  return [{ title: "Команды — HackForge" }];
 }
 
 export default function Teams() {
-  return (
-    <DashboardPlaceholderPage
-      title="Teams Dashboard"
-      description="Manage your teams and invitations."
-    />
-  );
+  return <TeamsDashboardPage />;
 }

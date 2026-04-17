@@ -26,6 +26,7 @@ public class ProfileService {
                 .skills(user.getSkills())
                 .lookingForTeam(user.getLookingForTeam())
                 .teamId(user.getTeamId())
+                .isOrganizer(user.getIsOrganizer())
                 .build();
     }
 
@@ -49,6 +50,7 @@ public class ProfileService {
                 .skills(user.getSkills())
                 .lookingForTeam(user.getLookingForTeam())
                 .teamId(user.getTeamId())
+                .isOrganizer(user.getIsOrganizer())
                 .build();
     }
 }

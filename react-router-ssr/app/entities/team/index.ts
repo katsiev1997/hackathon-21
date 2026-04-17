@@ -8,6 +8,7 @@ export type {
 } from "./model/api/types";
 export { useLeaveTeamMutation } from "./model/mutations/use-leave-team-mutation";
 export { useTeamById } from "./model/queries/use-team-by-id";
+export { useTeamDetailQuery } from "./model/queries/use-team-detail";
 export { useTeamsQuery } from "./model/queries/use-teams";
 export { teamsMutationKeys, teamsQueryKeys } from "./model/query-keys";
 export type { TeamCardData, TeamMember, TeamRole } from "./model/types";

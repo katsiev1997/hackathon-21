@@ -1,10 +1,13 @@
 package org.hackathon21.backend.controller;
 
 
+import org.hackathon21.backend.dto.response.MyInviteResponse;
 import org.hackathon21.backend.entity.Invite;
+import org.hackathon21.backend.security.CurrentUserIdResolver;
 import org.hackathon21.backend.service.InviteService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -16,6 +19,7 @@ import java.util.UUID;
 @CrossOrigin(origins = "*")
 public class InviteController {
     private final InviteService inviteService;
+    private final CurrentUserIdResolver currentUserIdResolver;
 
     @PostMapping("/{id}/approve")
     public ResponseEntity<Void> approveByCaptain(@PathVariable UUID id, @RequestHeader("X-User-ID") UUID captainId) {
@@ -44,5 +48,11 @@ public class InviteController {
     @GetMapping("/team/{teamId}/pending")
     public ResponseEntity<List<Invite>> getPendingForCaptain(@PathVariable UUID teamId) {
         return ResponseEntity.ok(inviteService.getPendingForCaptain(teamId));
+    }
+
+    @GetMapping("/my")
+    public ResponseEntity<List<MyInviteResponse>> getMyInvites(Authentication authentication) {
+        UUID userId = currentUserIdResolver.requireCurrentUserId(authentication);
+        return ResponseEntity.ok(inviteService.getMyInvites(userId));
     }
 }
