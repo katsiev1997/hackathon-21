@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -44,11 +45,23 @@ public class IdeaService {
         return buildIdeaResponse(idea);
     }
 
-    public List<IdeaResponse> getIdeas(IdeaStatus status) {
+    public List<IdeaResponse> getIdeas(IdeaStatus status, String sort) {
         List<Idea> ideas = status != null
                 ? ideaRepository.findByStatus(status)
                 : ideaRepository.findAll();
 
+        String sortKey = sort != null && !sort.isBlank() ? sort : "createdAt";
+
+        if ("avgScore".equalsIgnoreCase(sortKey)) {
+            return ideas.stream()
+                    .map(this::buildIdeaResponse)
+                    .sorted(Comparator
+                            .comparing(IdeaResponse::getAvgScore, Comparator.nullsLast(Comparator.reverseOrder()))
+                            .thenComparing(r -> r.getId().toString()))
+                    .collect(Collectors.toList());
+        }
+
+        ideas.sort(Comparator.comparing(Idea::getCreatedAt, Comparator.nullsLast(Comparator.reverseOrder())));
         return ideas.stream()
                 .map(this::buildIdeaResponse)
                 .collect(Collectors.toList());
@@ -117,6 +130,42 @@ public class IdeaService {
         ideaRepository.save(idea);
 
         return buildIdeaResponse(idea);
+    }
+
+    /** Организатор: голосование → одобрено. */
+    @Transactional
+    public IdeaResponse approveIdeaByOrganizer(UUID actorId, UUID ideaId) {
+        requireOrganizer(actorId);
+        Idea idea = ideaRepository.findById(ideaId)
+                .orElseThrow(() -> new RuntimeException("Idea not found"));
+        if (idea.getStatus() != IdeaStatus.voting) {
+            throw new RuntimeException("Idea must be in voting status to approve");
+        }
+        idea.setStatus(IdeaStatus.approved);
+        ideaRepository.save(idea);
+        return buildIdeaResponse(idea);
+    }
+
+    /** Организатор: одобрено → в работе. */
+    @Transactional
+    public IdeaResponse startIdeaByOrganizer(UUID actorId, UUID ideaId) {
+        requireOrganizer(actorId);
+        Idea idea = ideaRepository.findById(ideaId)
+                .orElseThrow(() -> new RuntimeException("Idea not found"));
+        if (idea.getStatus() != IdeaStatus.approved) {
+            throw new RuntimeException("Idea must be in approved status to start");
+        }
+        idea.setStatus(IdeaStatus.in_progress);
+        ideaRepository.save(idea);
+        return buildIdeaResponse(idea);
+    }
+
+    private void requireOrganizer(UUID userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+        if (!Boolean.TRUE.equals(user.getIsOrganizer())) {
+            throw new RuntimeException("Forbidden: organizer only");
+        }
     }
 
     private IdeaResponse buildIdeaResponse(Idea idea) {

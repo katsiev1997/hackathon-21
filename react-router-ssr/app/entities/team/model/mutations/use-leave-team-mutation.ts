@@ -1,6 +1,7 @@
 import { type UseMutationOptions, useMutation, useQueryClient } from "@tanstack/react-query";
 import { leaveTeam } from "~/entities/team/model/api/leave-team";
 import { teamsMutationKeys, teamsQueryKeys } from "~/entities/team/model/query-keys";
+import { invitesQueryKeys } from "~/features/invites/model/query-keys";
 
 const profileQueryKey = ["profile"] as const;
 const participantsQueryKey = ["participants"] as const;
@@ -17,8 +18,9 @@ export function useLeaveTeamMutation(options?: Options) {
     ...rest,
     onSuccess: async (data, variables, onMutateResult, context) => {
       await queryClient.invalidateQueries({ queryKey: profileQueryKey });
-      await queryClient.invalidateQueries({ queryKey: teamsQueryKeys.list() });
+      await queryClient.invalidateQueries({ queryKey: teamsQueryKeys.all });
       await queryClient.invalidateQueries({ queryKey: participantsQueryKey });
+      await queryClient.invalidateQueries({ queryKey: invitesQueryKeys.my() });
       await userOnSuccess?.(data, variables, onMutateResult, context);
     },
   });

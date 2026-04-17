@@ -155,7 +155,7 @@ export function ParticipantsBoard() {
                 key={p.id}
                 participant={p}
                 currentUserId={profile?.id}
-                myTeamId={myTeamId}
+                myTeamId={myTeamId ?? undefined}
                 canInvite={canInvite}
                 inviting={invitingId === p.id}
                 onInvite={handleInvite}

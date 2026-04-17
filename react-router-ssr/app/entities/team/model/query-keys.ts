@@ -1,6 +1,7 @@
 export const teamsQueryKeys = {
   all: ["teams"] as const,
   list: () => [...teamsQueryKeys.all, "list"] as const,
+  detail: (teamId: string) => [...teamsQueryKeys.all, "detail", teamId] as const,
 };
 
 export const teamsMutationKeys = {

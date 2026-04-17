@@ -1,6 +1,7 @@
 import { Kanban, LayoutDashboard, Lightbulb, Search, Trophy, User } from "lucide-react";
 import type { ProfileResponse } from "~/entities/user/model/api/profile";
 import { UserInfo } from "~/entities/user/ui/user-info";
+import { useMyInvitesQuery } from "~/features/invites";
 import { ScrollArea } from "~/shared/components/ui/scroll-area";
 import {
   Sidebar,
@@ -34,6 +35,9 @@ type AppSidebarProps = {
 };
 
 export function AppSidebar({ user }: AppSidebarProps) {
+  const myInvites = useMyInvitesQuery();
+  const inviteActionCount = myInvites.data?.filter((i) => i.status === "approved").length ?? 0;
+
   return (
     <Sidebar collapsible="offcanvas" variant="sidebar">
       <SidebarHeader className="gap-3 px-4 py-4">
@@ -52,7 +56,13 @@ export function AppSidebar({ user }: AppSidebarProps) {
             <SidebarGroupContent>
               <SidebarMenu>
                 {NAV_PRIMARY.map((item) => (
-                  <NavItem key={item.href} href={item.href} label={item.label} icon={item.icon} />
+                  <NavItem
+                    key={item.href}
+                    href={item.href}
+                    label={item.label}
+                    icon={item.icon}
+                    badgeCount={item.href === "/dashboard/teams" ? inviteActionCount : undefined}
+                  />
                 ))}
               </SidebarMenu>
             </SidebarGroupContent>

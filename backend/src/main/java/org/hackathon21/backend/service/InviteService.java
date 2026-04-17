@@ -1,5 +1,6 @@
 package org.hackathon21.backend.service;
 
+import org.hackathon21.backend.dto.response.MyInviteResponse;
 import org.hackathon21.backend.entity.Invite;
 import org.hackathon21.backend.entity.Team;
 import org.hackathon21.backend.entity.User;
@@ -11,8 +12,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
+import java.util.Comparator;
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -119,5 +122,25 @@ public class InviteService {
 
     public List<Invite> getPendingForCaptain(UUID teamId) {
         return inviteRepository.findByTeamIdAndStatus(teamId, InviteStatus.pending_captain);
+    }
+
+    /** Приглашения для текущего пользователя: ожидают капитана или одобрены капитаном (можно принять). */
+    public List<MyInviteResponse> getMyInvites(UUID inviteeId) {
+        List<InviteStatus> statuses = List.of(InviteStatus.pending_captain, InviteStatus.approved);
+        List<Invite> invites = inviteRepository.findByInviteeIdAndStatusIn(inviteeId, statuses);
+        return invites.stream()
+                .sorted(Comparator.comparing(Invite::getCreatedAt).reversed())
+                .map(invite -> {
+                    Team team = teamRepository.findById(invite.getTeamId())
+                            .orElseThrow(() -> new RuntimeException("Team not found"));
+                    return MyInviteResponse.builder()
+                            .inviteId(invite.getId())
+                            .teamId(team.getId())
+                            .teamName(team.getName())
+                            .inviterId(invite.getInviterId())
+                            .status(invite.getStatus().name())
+                            .build();
+                })
+                .collect(Collectors.toList());
     }
 }

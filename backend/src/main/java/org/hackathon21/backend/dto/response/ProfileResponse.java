@@ -17,4 +17,5 @@ public class ProfileResponse {
     private List<String> skills;
     private Boolean lookingForTeam;
     private UUID teamId;
+    private Boolean isOrganizer;
 }

@@ -4,8 +4,9 @@ import { ideasQueryKeys } from "../query-keys";
 
 export function useIdeasQuery(params?: GetIdeasParams) {
   const statusKey = params?.status ?? "all";
+  const sortKey = params?.sort ?? "createdAt";
   return useQuery({
-    queryKey: ideasQueryKeys.list(statusKey),
+    queryKey: ideasQueryKeys.list(statusKey, sortKey),
     queryFn: () => getIdeas(params),
   });
 }

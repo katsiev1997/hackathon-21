@@ -33,8 +33,9 @@ public class IdeaController {
 
     @GetMapping
     public ResponseEntity<List<IdeaResponse>> getIdeas(
-            @RequestParam(required = false) IdeaStatus status) {
-        return ResponseEntity.ok(ideaService.getIdeas(status));
+            @RequestParam(required = false) IdeaStatus status,
+            @RequestParam(required = false, defaultValue = "createdAt") String sort) {
+        return ResponseEntity.ok(ideaService.getIdeas(status, sort));
     }
 
     @PostMapping("/{id}/vote")
@@ -53,5 +54,23 @@ public class IdeaController {
             Authentication authentication) {
         return ResponseEntity.ok(
                 ideaService.submitForVoting(currentUserIdResolver.requireCurrentUserId(authentication), id));
+    }
+
+    /** Организатор: перевести идею из голосования в «одобрено». */
+    @PostMapping("/{id}/approve")
+    public ResponseEntity<IdeaResponse> approveIdea(
+            @PathVariable UUID id,
+            Authentication authentication) {
+        return ResponseEntity.ok(
+                ideaService.approveIdeaByOrganizer(currentUserIdResolver.requireCurrentUserId(authentication), id));
+    }
+
+    /** Организатор: перевести идею из «одобрено» в «в работе». */
+    @PostMapping("/{id}/start")
+    public ResponseEntity<IdeaResponse> startIdea(
+            @PathVariable UUID id,
+            Authentication authentication) {
+        return ResponseEntity.ok(
+                ideaService.startIdeaByOrganizer(currentUserIdResolver.requireCurrentUserId(authentication), id));
     }
 }

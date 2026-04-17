@@ -1,8 +1,10 @@
+import type { IdeasSort } from "./api/get-ideas";
 import type { IdeaStatus } from "./types";
 
 export const ideasQueryKeys = {
   all: ["ideas"] as const,
-  list: (status?: IdeaStatus | "all") => [...ideasQueryKeys.all, "list", status ?? "all"] as const,
+  list: (status?: IdeaStatus | "all", sort?: IdeasSort | "default") =>
+    [...ideasQueryKeys.all, "list", status ?? "all", sort ?? "createdAt"] as const,
 };
 
 export const ideasMutationKeys = {
