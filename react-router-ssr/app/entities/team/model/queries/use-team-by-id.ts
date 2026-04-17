@@ -18,6 +18,7 @@ export function useTeamById(teamId: string | null | undefined) {
   return {
     team,
     name: team?.name ?? null,
+    captainId: team?.captainId ?? null,
     /** Пока неизвестно имя: идёт загрузка списка команд при непустом teamId */
     isNameLoading: needsLookup && teamsQuery.isPending,
     isTeamsError: teamsQuery.isError,

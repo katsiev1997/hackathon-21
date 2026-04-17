@@ -1,12 +1,21 @@
 import { Loader2Icon } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { useLeaveTeamMutation } from "~/entities/team";
 import { ROLE_LABELS } from "~/entities/team/lib/role-labels";
 import type { TeamRole } from "~/entities/team/model/types";
 import type { ProfileResponse } from "~/entities/user/model/api/profile";
 import { useUpdateProfileMutation } from "~/entities/user/model/mutations/use-update-profile-mutation";
 import { SkillsList } from "~/features/skills-list";
 import { Button } from "~/shared/components/ui/button";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "~/shared/components/ui/dialog";
 import { Input } from "~/shared/components/ui/input";
 import { Label } from "~/shared/components/ui/label";
 import { Skeleton } from "~/shared/components/ui/skeleton";
@@ -23,6 +32,8 @@ export type ProfileEditFormProps = {
   profile: ProfileResponse;
   /** Название из GET /teams по `profile.teamId` */
   teamName?: string | null;
+  /** Капитан команды из GET /teams (если команда есть в списке) */
+  teamCaptainId?: string | null;
   /** Пока грузится список команд (при непустом teamId) */
   isTeamNameLoading?: boolean;
 };
@@ -30,6 +41,7 @@ export type ProfileEditFormProps = {
 export function ProfileEditForm({
   profile,
   teamName = null,
+  teamCaptainId = null,
   isTeamNameLoading = false,
 }: ProfileEditFormProps) {
   const [name, setName] = useState(profile.name);
@@ -43,6 +55,14 @@ export function ProfileEditForm({
   }, [profile]);
 
   const mutation = useUpdateProfileMutation();
+  const leaveTeamMutation = useLeaveTeamMutation();
+  const [leaveDialogOpen, setLeaveDialogOpen] = useState(false);
+
+  const teamIdTrimmed = profile.teamId?.trim() ?? "";
+  const captainIdTrimmed = teamCaptainId?.trim() ?? "";
+  const isCaptain = Boolean(captainIdTrimmed) && captainIdTrimmed === profile.id.trim();
+  const canLeaveTeam = Boolean(teamIdTrimmed) && !isTeamNameLoading && !isCaptain;
+  const isBusy = mutation.isPending || leaveTeamMutation.isPending;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,6 +78,17 @@ export function ProfileEditForm({
         skills,
       });
       toast.success("Профиль сохранён");
+    } catch (err) {
+      toast.error(await getApiErrorMessage(err));
+    }
+  };
+
+  const handleLeaveTeam = async () => {
+    if (!teamIdTrimmed) return;
+    try {
+      await leaveTeamMutation.mutateAsync(teamIdTrimmed);
+      toast.success("Вы вышли из команды");
+      setLeaveDialogOpen(false);
     } catch (err) {
       toast.error(await getApiErrorMessage(err));
     }
@@ -83,7 +114,7 @@ export function ProfileEditForm({
           id="profile-name"
           value={name}
           onChange={(e) => setName(e.target.value)}
-          disabled={mutation.isPending}
+          disabled={isBusy}
           autoComplete="name"
         />
       </div>
@@ -97,7 +128,7 @@ export function ProfileEditForm({
           )}
           value={role}
           onChange={(e) => setRole(e.target.value as TeamRole)}
-          disabled={mutation.isPending}
+          disabled={isBusy}
         >
           {ROLES.map((r) => (
             <option key={r} value={r}>
@@ -109,7 +140,7 @@ export function ProfileEditForm({
 
       <div className="grid gap-2">
         <Label>Статус команды</Label>
-        {profile.teamId?.trim() ? (
+        {teamIdTrimmed ? (
           <>
             <div className="text-sm text-foreground">
               {isTeamNameLoading ? (
@@ -122,10 +153,61 @@ export function ProfileEditForm({
                 <p>Вы в команде</p>
               )}
             </div>
-            {!isTeamNameLoading && !teamName && profile.teamId?.trim() ? (
+            {!isTeamNameLoading && !teamName ? (
               <p className="text-xs text-muted-foreground break-all font-mono">
-                Команда не найдена в каталоге (id: {profile.teamId.trim()})
+                Команда не найдена в каталоге (id: {teamIdTrimmed})
               </p>
+            ) : null}
+            {isCaptain ? (
+              <p className="mt-2 text-sm text-muted-foreground">
+                Капитан не может выйти из команды.
+              </p>
+            ) : null}
+            {canLeaveTeam ? (
+              <>
+                <Button
+                  type="button"
+                  variant="destructive"
+                  size="sm"
+                  className="mt-2 w-fit"
+                  disabled={isBusy}
+                  onClick={() => setLeaveDialogOpen(true)}
+                >
+                  Выйти из команды
+                </Button>
+                <Dialog open={leaveDialogOpen} onOpenChange={setLeaveDialogOpen}>
+                  <DialogContent showCloseButton={!leaveTeamMutation.isPending}>
+                    <DialogHeader>
+                      <DialogTitle>Выйти из команды?</DialogTitle>
+                      <DialogDescription>
+                        Вы покинете состав. Если вы были последним участником, команда будет
+                        удалена.
+                      </DialogDescription>
+                    </DialogHeader>
+                    <DialogFooter>
+                      <Button
+                        type="button"
+                        variant="outline"
+                        disabled={leaveTeamMutation.isPending}
+                        onClick={() => setLeaveDialogOpen(false)}
+                      >
+                        Отмена
+                      </Button>
+                      <Button
+                        type="button"
+                        variant="destructive"
+                        disabled={leaveTeamMutation.isPending}
+                        onClick={() => void handleLeaveTeam()}
+                      >
+                        {leaveTeamMutation.isPending ? (
+                          <Loader2Icon className="size-4 animate-spin" data-icon="inline-start" />
+                        ) : null}
+                        Выйти
+                      </Button>
+                    </DialogFooter>
+                  </DialogContent>
+                </Dialog>
+              </>
             ) : null}
           </>
         ) : (
@@ -138,15 +220,10 @@ export function ProfileEditForm({
 
       <div className="space-y-2">
         <Label>Навыки</Label>
-        <SkillsList
-          skills={skills}
-          onChange={setSkills}
-          disabled={mutation.isPending}
-          idPrefix="profile"
-        />
+        <SkillsList skills={skills} onChange={setSkills} disabled={isBusy} idPrefix="profile" />
       </div>
 
-      <Button type="submit" disabled={mutation.isPending || !dirty}>
+      <Button type="submit" disabled={isBusy || !dirty}>
         {mutation.isPending ? (
           <Loader2Icon className="size-4 animate-spin" data-icon="inline-start" />
         ) : null}

@@ -1,8 +1,7 @@
-import { Bell } from "lucide-react";
 import { CreateTeamButton } from "~/features/create-team/ui/create-team-button";
 import { TeamSearchInput } from "~/features/team-search/ui/team-search-input";
-import { Button } from "~/shared/components/ui/button";
 import { SidebarTrigger } from "~/shared/components/ui/sidebar";
+import { ParticipantInvitePopover } from "~/widgets/team-board/ui/participant-invite-popover";
 
 type TeamBoardHeaderProps = {
   onSearchQueryChange: (query: string) => void;
@@ -30,17 +29,15 @@ export function TeamBoardHeader({
           </div>
         </div>
       </div>
-      <div className="flex w-full flex-col gap-3 sm:flex-row sm:items-center sm:justify-end lg:max-w-xl">
+      <div className="flex items-end w-full flex-col gap-3 lg:max-w-md">
         <TeamSearchInput
           onQueryChange={onSearchQueryChange}
-          className="w-full sm:max-w-xs"
+          className="w-full sm:max-w-sm"
           placeholder={searchPlaceholder}
           ariaLabel={searchAriaLabel}
         />
         <div className="flex shrink-0 items-center gap-2 self-end sm:self-auto">
-          <Button type="button" variant="ghost" size="icon-sm" aria-label="Notifications">
-            <Bell />
-          </Button>
+          <ParticipantInvitePopover />
           <CreateTeamButton />
         </div>
       </div>

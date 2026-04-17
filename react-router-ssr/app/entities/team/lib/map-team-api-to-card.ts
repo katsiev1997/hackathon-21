@@ -9,6 +9,7 @@ export function mapTeamApiToTeamCardData(response: TeamApiResponse): TeamCardDat
   return {
     id: response.id,
     name: response.name,
+    captainId: response.captainId,
     description: response.description ?? "",
     track: DEFAULT_TRACK,
     openRoles: [],

@@ -17,7 +17,11 @@ export function meta() {
 
 export default function Profile() {
   const { data, isLoading, isError, error, refetch, isFetching } = useGetProfile();
-  const { name: teamName, isNameLoading: isTeamNameLoading } = useTeamById(data?.teamId);
+  const {
+    name: teamName,
+    captainId: teamCaptainId,
+    isNameLoading: isTeamNameLoading,
+  } = useTeamById(data?.teamId);
 
   if (isLoading) {
     return (
@@ -65,6 +69,7 @@ export default function Profile() {
           <ProfileEditForm
             profile={data}
             teamName={teamName}
+            teamCaptainId={teamCaptainId}
             isTeamNameLoading={isTeamNameLoading}
           />
         </CardContent>
