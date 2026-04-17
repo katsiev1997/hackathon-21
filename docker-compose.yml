@@ -1,7 +1,8 @@
 
-services:
 
-   frontend:
+
+services:
+  frontend:
     image: node:20-alpine
     working_dir: /app
     volumes:
