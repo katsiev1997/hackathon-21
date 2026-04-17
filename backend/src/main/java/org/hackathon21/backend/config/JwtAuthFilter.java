@@ -31,13 +31,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         final String authHeader = request.getHeader("Authorization");
 
-        // Проверяем, есть ли заголовок Authorization и начинается ли он с "Bearer "
         if (authHeader == null || !authHeader.startsWith("Bearer ")) {
             filterChain.doFilter(request, response);
             return;
         }
 
-        final String jwt = authHeader.substring(7); // убираем "Bearer "
+        final String jwt = authHeader.substring(7);
 
         if (jwt.isEmpty()) {
             filterChain.doFilter(request, response);
@@ -47,7 +46,6 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         try {
             final String userEmail = jwtService.extractUsername(jwt);
 
-            // Если email есть и пользователь ещё не аутентифицирован
             if (userEmail != null && SecurityContextHolder.getContext().getAuthentication() == null) {
                 UserDetails userDetails = this.userDetailsService.loadUserByUsername(userEmail);
 

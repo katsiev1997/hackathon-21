@@ -91,7 +91,6 @@ public class InviteService {
             throw new RuntimeException("Team is full");
         }
 
-        // Добавляем пользователя в команду
         user.setTeamId(team.getId());
         user.setLookingForTeam(false);
         user.setJoinedTeamAt(LocalDateTime.now());

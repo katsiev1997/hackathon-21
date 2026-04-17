@@ -43,7 +43,6 @@ public class TeamService {
 
         team = teamRepository.save(team);
 
-        // Обновляем пользователя
         user.setTeamId(team.getId());
         user.setLookingForTeam(false);
         user.setJoinedTeamAt(LocalDateTime.now());
@@ -73,12 +72,10 @@ public class TeamService {
         User invitee = userRepository.findById(request.getUserId())
                 .orElseThrow(() -> new RuntimeException("Invitee not found"));
 
-        // Проверка: приглашаемый не должен быть в команде
         if (invitee.getTeamId() != null) {
             throw new RuntimeException("User already in a team");
         }
 
-        // Проверка: команда не полная
         long memberCount = userRepository.findAll().stream()
                 .filter(u -> teamId.equals(u.getTeamId()))
                 .count();
@@ -86,7 +83,6 @@ public class TeamService {
             throw new RuntimeException("Team is full (max 5 members)");
         }
 
-        // Проверка: нет уже активного приглашения
         List<InviteStatus> activeStatuses = List.of(
                 InviteStatus.pending_captain, InviteStatus.approved
         );
@@ -125,22 +121,18 @@ public class TeamService {
         Team team = teamRepository.findById(teamId)
                 .orElseThrow(() -> new RuntimeException("Team not found"));
 
-        // Удаляем пользователя из команды
         user.setTeamId(null);
         user.setLookingForTeam(true);
         user.setJoinedTeamAt(null);
         userRepository.save(user);
 
-        // Проверяем, остались ли ещё участники в команде
         long remainingMembers = userRepository.findAll().stream()
                 .filter(u -> teamId.equals(u.getTeamId()))
                 .count();
 
         if (remainingMembers == 0) {
-            // Удаляем команду
             teamRepository.delete(team);
         } else if (team.getCaptainId().equals(userId) && remainingMembers > 0) {
-            // Передаём капитанство самому старому участнику
             User newCaptain = userRepository.findAll().stream()
                     .filter(u -> teamId.equals(u.getTeamId()))
                     .min((u1, u2) -> u1.getJoinedTeamAt().compareTo(u2.getJoinedTeamAt()))
