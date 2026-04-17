@@ -15,8 +15,8 @@ import { Input } from "~/shared/components/ui/input";
 import { Label } from "~/shared/components/ui/label";
 import { getApiErrorMessage } from "~/shared/lib/get-api-error-message";
 import { cn, formatFieldErrors } from "~/shared/lib/utils";
-import { login as loginApi } from "../model/api/login";
 import { useLoginMutation, useRegisterMutation } from "../model";
+import { login as loginApi } from "../model/api/login";
 
 type AuthTab = "login" | "signup";
 
@@ -101,9 +101,7 @@ export function AuthForm() {
 
   const confirmPassword = useCallback(
     ({ value }: { value: string }) => {
-      return value !== form.getFieldValue("password")
-        ? "Пароли не совпадают"
-        : undefined;
+      return value !== form.getFieldValue("password") ? "Пароли не совпадают" : undefined;
     },
     [form],
   );
@@ -175,9 +173,7 @@ export function AuthForm() {
                       className="h-10 pl-9"
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) =>
-                        field.handleChange((e.target as HTMLInputElement).value)
-                      }
+                      onChange={(e) => field.handleChange((e.target as HTMLInputElement).value)}
                       aria-invalid={isInvalid}
                     />
                   </div>
@@ -213,11 +209,7 @@ export function AuthForm() {
                         className="h-10 pl-9"
                         value={field.state.value}
                         onBlur={field.handleBlur}
-                        onChange={(e) =>
-                          field.handleChange(
-                            (e.target as HTMLInputElement).value,
-                          )
-                        }
+                        onChange={(e) => field.handleChange((e.target as HTMLInputElement).value)}
                         aria-invalid={isInvalid}
                       />
                     </div>
@@ -258,31 +250,21 @@ export function AuthForm() {
                       id={field.name}
                       name={field.name}
                       type={showPassword ? "text" : "password"}
-                      autoComplete={
-                        tab === "login" ? "current-password" : "new-password"
-                      }
+                      autoComplete={tab === "login" ? "current-password" : "new-password"}
                       placeholder="••••••••"
                       className="h-10 pl-9 pr-10"
                       value={field.state.value}
                       onBlur={field.handleBlur}
-                      onChange={(e) =>
-                        field.handleChange((e.target as HTMLInputElement).value)
-                      }
+                      onChange={(e) => field.handleChange((e.target as HTMLInputElement).value)}
                       aria-invalid={isInvalid}
                     />
                     <button
                       type="button"
                       className="absolute right-1 top-1/2 flex size-8 -translate-y-1/2 items-center justify-center rounded-md text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
                       onClick={() => setShowPassword((v) => !v)}
-                      aria-label={
-                        showPassword ? "Скрыть пароль" : "Показать пароль"
-                      }
+                      aria-label={showPassword ? "Скрыть пароль" : "Показать пароль"}
                     >
-                      {showPassword ? (
-                        <EyeOff className="size-4" />
-                      ) : (
-                        <Eye className="size-4" />
-                      )}
+                      {showPassword ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                     </button>
                   </div>
                   {isInvalid && (
@@ -321,11 +303,7 @@ export function AuthForm() {
                         className="h-10 pl-9"
                         value={field.state.value}
                         onBlur={field.handleBlur}
-                        onChange={(e) =>
-                          field.handleChange(
-                            (e.target as HTMLInputElement).value,
-                          )
-                        }
+                        onChange={(e) => field.handleChange((e.target as HTMLInputElement).value)}
                         aria-invalid={isInvalid}
                       />
                     </div>
@@ -345,15 +323,10 @@ export function AuthForm() {
               id="remember"
               type="checkbox"
               checked={remember}
-              onChange={(e) =>
-                setRemember((e.target as HTMLInputElement).checked)
-              }
+              onChange={(e) => setRemember((e.target as HTMLInputElement).checked)}
               className="size-4 rounded border-input text-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background"
             />
-            <Label
-              htmlFor="remember"
-              className="cursor-pointer font-normal text-muted-foreground"
-            >
+            <Label htmlFor="remember" className="cursor-pointer font-normal text-muted-foreground">
               Запомнить на 30 дней
             </Label>
           </div>
@@ -369,9 +342,7 @@ export function AuthForm() {
             size="lg"
             className="h-10 w-full font-medium"
             disabled={
-              form.state.isSubmitting ||
-              loginMutation.isPending ||
-              registerMutation.isPending
+              form.state.isSubmitting || loginMutation.isPending || registerMutation.isPending
             }
           >
             {form.state.isSubmitting ? (

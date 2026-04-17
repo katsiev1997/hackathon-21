@@ -1,9 +1,6 @@
 import type { LucideIcon } from "lucide-react";
 import { Link, useLocation } from "react-router";
-import {
-  SidebarMenuButton,
-  SidebarMenuItem,
-} from "~/shared/components/ui/sidebar";
+import { SidebarMenuButton, SidebarMenuItem } from "~/shared/components/ui/sidebar";
 
 type NavItemProps = {
   href: string;
