@@ -1,6 +1,5 @@
 package org.hackathon21.backend.service;
 
-import org.hackathon21.backend.dto.*;
 import org.hackathon21.backend.dto.request.LoginRequest;
 import org.hackathon21.backend.dto.request.RegisterRequest;
 import org.hackathon21.backend.dto.response.AuthResponse;
@@ -27,7 +26,7 @@ public class AuthService {
                 .email(request.getEmail())
                 .passwordHash(passwordService.hash(request.getPassword()))
                 .name(request.getName())
-                .role(UserRole.frontend) // роль по умолчанию
+                .role(UserRole.frontend)
                 .lookingForTeam(true)
                 .isOrganizer(false)
                 .build();
@@ -57,4 +56,4 @@ public class AuthService {
                 .role(user.getRole() != null ? user.getRole().name() : "frontend")
                 .build();
     }
-}
+
