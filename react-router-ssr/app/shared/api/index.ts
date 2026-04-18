@@ -18,9 +18,12 @@ function getUserId(): string | null {
   }
 }
 
+// В dev — same-origin "/api" (проксируется vite на localhost:8080, см. vite.config.ts).
+// В prod — явный URL backend через build-arg VITE_API_URL (инлайнится Vite в клиентский бандл).
+const API_PREFIX = import.meta.env.VITE_API_URL ?? "/api";
+
 export const api = ky.create({
-  // По умолчанию /api — тот же origin что и Vite, см. proxy в vite.config.ts (обход CORS в dev).
-  prefix: import.meta.env.VITE_API_URL || "/api",
+  prefix: API_PREFIX,
   timeout: 5000,
   headers: {
     "Content-Type": "application/json",
