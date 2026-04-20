@@ -20,7 +20,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/teams")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class TeamController {
     private final TeamService teamService;
     private final TeamRecommendationService teamRecommendationService;

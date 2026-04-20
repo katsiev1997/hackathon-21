@@ -7,10 +7,14 @@ Full-stack приложение:
 - Docker окружение
 
 ---
-
 # 🚀 ЗАПУСК ПРОЕКТА
 
 ## ▶️ ОДНА КОМАНДА
 
 ```bash
 docker compose up --build
+```
+
+### Открыть в браузере:
+### 👉 http://localhost:3000
+

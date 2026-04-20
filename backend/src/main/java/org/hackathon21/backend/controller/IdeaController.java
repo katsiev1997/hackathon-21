@@ -18,7 +18,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/ideas")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class IdeaController {
     private final IdeaService ideaService;
     private final CurrentUserIdResolver currentUserIdResolver;
