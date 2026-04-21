@@ -40,5 +40,25 @@ services:
     depends_on:
       - backend
 
+  seed-mock-data:
+    image: alpine:3.20
+    depends_on:
+      postgres:
+        condition: service_healthy
+      backend:
+        condition: service_started
+    volumes:
+      - ./scripts:/scripts:ro
+    entrypoint: ["/bin/sh", "-c"]
+    command:
+      - |
+        apk add --no-cache bash curl jq postgresql-client &&
+        chmod +x /scripts/seed-mock-data-api.sh &&
+        for i in 1 2 3 4 5 6 7 8 9 10; do
+          API_BASE_URL=http://backend:8080/api PGHOST=postgres PGPORT=5432 PGUSER=hackforge PGPASSWORD=hackforge PGDATABASE=hackforge /scripts/seed-mock-data-api.sh && exit 0;
+          sleep 3;
+        done;
+        exit 1
+
 volumes:
   postgres_data:
