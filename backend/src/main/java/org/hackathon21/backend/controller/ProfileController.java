@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 @RestController
 @RequestMapping("/api/profile")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class ProfileController {
     private final ProfileService profileService;
     private final CurrentUserIdResolver currentUserIdResolver;

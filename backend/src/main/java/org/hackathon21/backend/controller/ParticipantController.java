@@ -11,7 +11,6 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/participants")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class ParticipantController {
     private final ParticipantService participantService;
 

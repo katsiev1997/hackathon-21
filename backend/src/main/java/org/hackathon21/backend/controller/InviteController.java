@@ -16,7 +16,6 @@ import java.util.UUID;
 @RestController
 @RequestMapping("/api/invites")
 @RequiredArgsConstructor
-@CrossOrigin(origins = "*")
 public class InviteController {
     private final InviteService inviteService;
     private final CurrentUserIdResolver currentUserIdResolver;
